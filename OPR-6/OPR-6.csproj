@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{61FA6575-C80B-4186-8561-CB55994ECD56}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>OPR_6</RootNamespace>
+    <RootNamespace>Lomtseu</RootNamespace>
     <AssemblyName>OPR-6</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

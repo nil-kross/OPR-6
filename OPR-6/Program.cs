@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OPR_6
+namespace Lomtseu
 {
     class Program
     {
