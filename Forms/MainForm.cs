@@ -21,7 +21,7 @@ namespace Lomtseu
 
         protected void ResizeLayout()
         {
-            var height = 30;
+            var height = 40;
 
             this.grid.Location = new Point(0, height);
             this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - height);
