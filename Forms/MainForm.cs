@@ -10,11 +10,26 @@ using System.Windows.Forms;
 
 namespace Lomtseu
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
+
+            this.ResizeLayout();
+        }
+
+        protected void ResizeLayout()
+        {
+            var height = 30;
+
+            this.grid.Location = new Point(0, height);
+            this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - height);
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            this.ResizeLayout();
         }
     }
 }
