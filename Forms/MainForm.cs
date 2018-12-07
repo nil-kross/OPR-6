@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lomtseu.GamesTheory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,11 +13,15 @@ namespace Lomtseu
 {
     public partial class MainForm : Form
     {
+        private Int32 defaultNValue = 5;
+        private GameModes mode = GameModes.MxN;
+
         public MainForm()
         {
             InitializeComponent();
 
             this.ResizeLayout();
+            this.nTextBox.Text = this.defaultNValue.ToString();
         }
 
         protected void ResizeLayout()
