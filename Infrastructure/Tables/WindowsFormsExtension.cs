@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lomtseu.Table
+namespace Lomtseu.Tables
 {
     public static class WindowsFormsExtension
     {
@@ -16,6 +16,7 @@ namespace Lomtseu.Table
                 grid.Rows.Remove(row);
             }
 
+            throw new NotImplementedException();
         }
     }
 }

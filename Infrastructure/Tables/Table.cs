@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lomtseu.Table
+namespace Lomtseu.Tables
 {
     public class Table
     {
@@ -19,6 +19,13 @@ namespace Lomtseu.Table
                     return this.cellsArray[row, col];
                 } else
                 {
+                    throw new ArgumentOutOfRangeException();
+                }
+            }
+            set {
+                if (row >= 0 && row < this.Rows && col >= 0 && col < this.Cols) {
+                    this.cellsArray[row, col] = value;
+                } else {
                     throw new ArgumentOutOfRangeException();
                 }
             }
