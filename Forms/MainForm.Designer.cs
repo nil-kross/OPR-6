@@ -29,8 +29,9 @@
         private void InitializeComponent()
         {
             this.grid = new System.Windows.Forms.DataGridView();
-            this.mSwitchButton = new System.Windows.Forms.Button();
-            this.nTextBox = new System.Windows.Forms.TextBox();
+            this.gameModeSwitchButton = new System.Windows.Forms.Button();
+            this.mTextBox = new System.Windows.Forms.TextBox();
+            this.startButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -42,35 +43,53 @@
             this.grid.Size = new System.Drawing.Size(240, 150);
             this.grid.TabIndex = 0;
             // 
-            // mSwitchButton
+            // gameModeSwitchButton
             // 
-            this.mSwitchButton.Location = new System.Drawing.Point(12, 11);
-            this.mSwitchButton.Name = "mSwitchButton";
-            this.mSwitchButton.Size = new System.Drawing.Size(60, 23);
-            this.mSwitchButton.TabIndex = 1;
-            this.mSwitchButton.Text = "(<=>) m x";
-            this.mSwitchButton.UseVisualStyleBackColor = true;
+            this.gameModeSwitchButton.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.gameModeSwitchButton.Location = new System.Drawing.Point(48, 10);
+            this.gameModeSwitchButton.Name = "gameModeSwitchButton";
+            this.gameModeSwitchButton.Size = new System.Drawing.Size(70, 23);
+            this.gameModeSwitchButton.TabIndex = 1;
+            this.gameModeSwitchButton.Text = "(<=>) M x 2";
+            this.gameModeSwitchButton.UseVisualStyleBackColor = false;
+            this.gameModeSwitchButton.Click += new System.EventHandler(this.OnGameModeSwitchButtonClick);
             // 
-            // nTextBox
+            // mTextBox
             // 
-            this.nTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.nTextBox.Location = new System.Drawing.Point(78, 12);
-            this.nTextBox.Name = "nTextBox";
-            this.nTextBox.Size = new System.Drawing.Size(52, 21);
-            this.nTextBox.TabIndex = 2;
-            this.nTextBox.Text = "0";
+            this.mTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.mTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.mTextBox.Location = new System.Drawing.Point(12, 12);
+            this.mTextBox.Name = "mTextBox";
+            this.mTextBox.Size = new System.Drawing.Size(30, 21);
+            this.mTextBox.TabIndex = 2;
+            this.mTextBox.Text = "0";
+            this.mTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.mTextBox.Leave += new System.EventHandler(this.OnMTextBoxLeave);
+            // 
+            // startButton
+            // 
+            this.startButton.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.startButton.Location = new System.Drawing.Point(164, 10);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(75, 23);
+            this.startButton.TabIndex = 3;
+            this.startButton.Text = "Start";
+            this.startButton.UseVisualStyleBackColor = false;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.LightCoral;
             this.ClientSize = new System.Drawing.Size(295, 255);
-            this.Controls.Add(this.nTextBox);
-            this.Controls.Add(this.mSwitchButton);
+            this.Controls.Add(this.startButton);
+            this.Controls.Add(this.mTextBox);
+            this.Controls.Add(this.gameModeSwitchButton);
             this.Controls.Add(this.grid);
             this.Name = "MainForm";
             this.Text = "ОПР 6";
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.Resize += new System.EventHandler(this.OnResize);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -80,8 +99,9 @@
         #endregion
 
         private System.Windows.Forms.DataGridView grid;
-        private System.Windows.Forms.Button mSwitchButton;
-        private System.Windows.Forms.TextBox nTextBox;
+        private System.Windows.Forms.Button gameModeSwitchButton;
+        private System.Windows.Forms.TextBox mTextBox;
+        private System.Windows.Forms.Button startButton;
     }
 }
 
