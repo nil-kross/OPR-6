@@ -11,12 +11,35 @@ namespace Lomtseu.Tables
     {
         public static void Load(this DataGridView grid, Table table)
         {
-            foreach (DataGridViewRow row in grid.Rows)
+            grid.Rows.Clear();
+            grid.Columns.Clear();
+
+            for (var c = 0; c < table.ColsAmount; c++)
             {
-                grid.Rows.Remove(row);
+                var cell = new DataGridViewButtonCell() {
+                    Value = ""
+                };
+                var col = new DataGridViewColumn(cell);
+
+                grid.Columns.Add(col);
             }
 
-            throw new NotImplementedException();
+            for (var r = 0; r < table.RowsAmount; r++)
+            {
+                DataGridViewRow row = new DataGridViewRow();
+
+                for (var c = 0; c < table.ColsAmount; c++)
+                {
+                    var tableCell = table[r, c];
+                    var cell = new DataGridViewTextBoxCell() {
+                        Value = tableCell.Value
+                    };
+
+                    row.Cells.Add(cell);
+                }
+
+                grid.Rows.Add(row);
+            }
         }
     }
 }

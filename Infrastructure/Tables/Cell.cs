@@ -15,5 +15,10 @@ namespace Lomtseu.Tables
         public int Col { get; set; }
         public abstract string Value { get; set; }
         public abstract string Default { get; set; }
+
+        public override String ToString()
+        {
+            return this.Value.ToString();
+        }
     }
 }
