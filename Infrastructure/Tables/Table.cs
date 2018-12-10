@@ -35,6 +35,30 @@ namespace Lomtseu.Tables
         {
             this.Rows = rows;
             this.Cols = cols;
+            this.cellsArray = new Cell[rows, cols];
+        }
+
+        public Table ForEach(Func<Cell, Int32, Int32, Cell> func)
+        {
+            for (var r = 0; r < this.Rows; r++)
+            {
+                for (var c = 0; c < this.Cols; c++)
+                {
+                    this[r, c] = func(this[r, c], r, c);
+                }
+            }
+
+            return this;
+        }
+
+        public Table ForEach(Func<Cell, Cell> func)
+        {
+            return this.ForEach((old, r, c) => func(old));
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} x {1}", this.Rows, this.Cols);
         }
     }
 }
