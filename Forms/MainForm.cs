@@ -130,7 +130,7 @@ namespace Lomtseu
             }
 
             {
-                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell(String.Format("{0}x{1}", r, c)));
+                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell("0"));
 
                 this.grid.Load(t);
             }
