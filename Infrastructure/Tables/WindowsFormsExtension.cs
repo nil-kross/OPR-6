@@ -16,7 +16,7 @@ namespace Lomtseu.Tables
 
             for (var c = 0; c < table.ColsAmount; c++)
             {
-                var cell = new DataGridViewButtonCell() {
+                var cell = new DataGridViewTextBoxCell() {
                     Value = ""
                 };
                 var col = new DataGridViewColumn(cell);
@@ -32,7 +32,11 @@ namespace Lomtseu.Tables
                 {
                     var tableCell = table[r, c];
                     var cell = new DataGridViewTextBoxCell() {
-                        Value = tableCell.Value
+                        Value = tableCell.Value,
+                        Style = new DataGridViewCellStyle() {
+                            ForeColor = tableCell.Fore,
+                            BackColor = tableCell.Back
+                        }
                     };
 
                     row.Cells.Add(cell);

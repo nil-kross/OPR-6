@@ -31,6 +31,7 @@
             this.grid = new System.Windows.Forms.DataGridView();
             this.gameModeSwitchButton = new System.Windows.Forms.Button();
             this.mTextBox = new System.Windows.Forms.TextBox();
+            this.buildButton = new System.Windows.Forms.Button();
             this.startButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
@@ -66,16 +67,27 @@
             this.mTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.mTextBox.Leave += new System.EventHandler(this.OnMTextBoxLeave);
             // 
+            // buildButton
+            // 
+            this.buildButton.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.buildButton.Location = new System.Drawing.Point(124, 10);
+            this.buildButton.Name = "buildButton";
+            this.buildButton.Size = new System.Drawing.Size(40, 23);
+            this.buildButton.TabIndex = 3;
+            this.buildButton.Text = "Build";
+            this.buildButton.UseVisualStyleBackColor = false;
+            this.buildButton.Click += new System.EventHandler(this.startButton_Click);
+            // 
             // startButton
             // 
-            this.startButton.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.startButton.Location = new System.Drawing.Point(164, 10);
+            this.startButton.AccessibleRole = System.Windows.Forms.AccessibleRole.TitleBar;
+            this.startButton.Location = new System.Drawing.Point(170, 10);
             this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(75, 23);
-            this.startButton.TabIndex = 3;
+            this.startButton.Size = new System.Drawing.Size(40, 23);
+            this.startButton.TabIndex = 4;
             this.startButton.Text = "Start";
-            this.startButton.UseVisualStyleBackColor = false;
-            this.startButton.Click += new System.EventHandler(this.startButton_Click);
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.OnStartButtonClick);
             // 
             // MainForm
             // 
@@ -84,6 +96,7 @@
             this.BackColor = System.Drawing.Color.LightCoral;
             this.ClientSize = new System.Drawing.Size(295, 255);
             this.Controls.Add(this.startButton);
+            this.Controls.Add(this.buildButton);
             this.Controls.Add(this.mTextBox);
             this.Controls.Add(this.gameModeSwitchButton);
             this.Controls.Add(this.grid);
@@ -101,6 +114,7 @@
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.Button gameModeSwitchButton;
         private System.Windows.Forms.TextBox mTextBox;
+        private System.Windows.Forms.Button buildButton;
         private System.Windows.Forms.Button startButton;
     }
 }
