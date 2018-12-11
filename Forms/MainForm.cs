@@ -16,7 +16,6 @@ namespace Lomtseu
     {
         private const Int32 defaultMValue = 5;
 
-        private Boolean isBuilded = false;
         private Boolean isMChanged = false;
         private Int32 mValue;
         private GameModes gameMode;
@@ -55,10 +54,8 @@ namespace Lomtseu
             this.mValue = MainForm.defaultMValue;
 
             this.ResizeLayout();
-            this.UpdateStartButton();
             this.OnGameModeChange(GameModes.MxN);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
-            //var a = (new GraphForm()).ShowDialog(); // DEBUG
         }
 
         protected void ResizeLayout()
@@ -97,11 +94,6 @@ namespace Lomtseu
             this.mTextBox.BackColor = this.isMChanged ? Color.LightYellow : Color.White;
         }
 
-        protected void UpdateStartButton()
-        {
-            this.startButton.Enabled = this.isBuilded;
-        }
-
         private void OnGameModeChange(GameModes gameMode) {
             this.gameMode = gameMode;
             this.UpdateGameMode(this.gameMode);
@@ -127,8 +119,6 @@ namespace Lomtseu
             var rowsValue = 0;
             var colsValue = 0;
 
-            this.isBuilded = true;
-            this.UpdateStartButton();
             this.M = this.M;
 
             if (this.gameMode == GameModes.MxN) {
@@ -140,123 +130,9 @@ namespace Lomtseu
             }
 
             {
-                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell(r.ToString()));
+                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell("0"));
 
                 this.grid.Load(t);
-            }
-        }
-
-        private void OnStartButtonClick(Object sender, EventArgs e) {
-            Double[][] array;
-            var rowsValue = this.grid.Rows.Count - 1;
-            var colsValue = this.grid.Columns.Count;
-
-            array = new Double[rowsValue][];
-
-            for (var r = 0; r < rowsValue; r++)
-            {
-                array[r] = new Double[colsValue];
-            }
-            {
-                var r = 0;
-
-                foreach (DataGridViewRow row in this.grid.Rows) {
-                    var c = 0;
-
-                    if (r < this.grid.Rows.Count - 1) {
-                        foreach (DataGridViewTextBoxCell col in row.Cells) {
-                            array[r][c] = Double.Parse(col.Value as String);
-
-                            c++;
-                        }
-                    }
-                    r++;
-                }
-            }
-            // Седловая точка
-            {
-                Point? point = null;
-                Double[] minByRowArray = new Double[rowsValue];
-                Double[] maxByColArray = new Double[colsValue];
-
-                for (var r = 0; r < rowsValue; r++) {
-                    minByRowArray[r] = array[r].Min();
-                }
-                for (var c = 0; c < colsValue; c++) {
-                    var maxValue = Double.MinValue;
-
-                    for (var r = 0; r < rowsValue; r++) {
-                        maxValue = Math.Max(array[r][c], maxValue);
-                    }
-                    maxByColArray[c] = maxValue;
-                }
-
-                {
-                    Table table = null;
-                    var maxByMinByRowValue = minByRowArray.Max();
-                    var minByMaxByColValue = maxByColArray.Min();
-                    var maxByRowsCountValue = 0;
-                    var maxByRowsIndexValue = -1;
-                    var minByColsCountValue = 0;
-                    var minByColsIndexValue = -1;
-
-                    {
-                        var i = 0;
-
-                        foreach (var minByRowValue in minByRowArray) {
-                            if (minByRowValue == maxByMinByRowValue) {
-                                maxByRowsCountValue++;
-                                maxByRowsIndexValue = i;
-                            }
-                            i++;
-                        }
-                    }
-                    {
-                        var i = 0;
-
-                        foreach (var maxByColValue in maxByColArray) {
-                            if (maxByColValue == minByMaxByColValue) {
-                                minByColsCountValue++;
-                                minByColsIndexValue = i;
-                            }
-                            i++;
-                        }
-                    }
-
-                    table = new Table(rowsValue + 1, colsValue + 1).ForEach(c => new TextCell(""));
-                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1) {
-                        point = new Point(minByColsIndexValue, maxByRowsIndexValue);
-                    }
-
-                    for (var r = 0; r < rowsValue; r++) {
-                        for (var c = 0; c < colsValue; c++) {
-                            var isSaddle = (point != null && (r == point?.Y && c == point?.X));
-
-                            table[r, c] = new TextCell(array[r][c].ToString()) {
-                                Fore = isSaddle ? Color.DarkGreen : Color.Black,
-                            };
-                        }
-                    }
-                    for (var r = 0; r < rowsValue; r++) {
-                        var isMaxMin = minByRowArray[r] == maxByMinByRowValue;
-                        var textString = String.Format("{0}{1}", minByRowArray[r], isMaxMin ? " *" : "");
-
-                        table[r, colsValue] = new TextCell(textString) {
-                            Fore = isMaxMin ? Color.Red : Color.Black
-                        };
-                    }
-                    for (var c = 0; c < colsValue; c++) {
-                        var isMinMax = maxByColArray[c] == minByMaxByColValue;
-                        var textString = String.Format("{0}{1}", maxByColArray[c], isMinMax ? " *" : "");
-
-                        table[rowsValue, c] = new TextCell(textString) {
-                            Fore = isMinMax ? Color.Red : Color.Black
-                        };
-                    }
-
-                    this.grid.Load(table);
-                }
-
             }
         }
     }
