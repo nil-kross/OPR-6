@@ -28,25 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.grid = new System.Windows.Forms.DataGridView();
             this.gameModeSwitchButton = new System.Windows.Forms.Button();
             this.mTextBox = new System.Windows.Forms.TextBox();
             this.buildButton = new System.Windows.Forms.Button();
             this.startButton = new System.Windows.Forms.Button();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.saddleTabPage = new System.Windows.Forms.TabPage();
+            this.paretoTabPage = new System.Windows.Forms.TabPage();
+            this.inputTabPage = new System.Windows.Forms.TabPage();
+            this.grid = new System.Windows.Forms.DataGridView();
+            this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
             // 
-            // grid
-            // 
-            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.grid.Location = new System.Drawing.Point(0, 40);
-            this.grid.Name = "grid";
-            this.grid.Size = new System.Drawing.Size(240, 150);
-            this.grid.TabIndex = 0;
-            // 
             // gameModeSwitchButton
             // 
-            this.gameModeSwitchButton.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.gameModeSwitchButton.BackColor = System.Drawing.Color.White;
             this.gameModeSwitchButton.Location = new System.Drawing.Point(48, 10);
             this.gameModeSwitchButton.Name = "gameModeSwitchButton";
             this.gameModeSwitchButton.Size = new System.Drawing.Size(70, 23);
@@ -57,7 +54,7 @@
             // 
             // mTextBox
             // 
-            this.mTextBox.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.mTextBox.BackColor = System.Drawing.Color.Yellow;
             this.mTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.mTextBox.Location = new System.Drawing.Point(12, 12);
             this.mTextBox.Name = "mTextBox";
@@ -69,25 +66,74 @@
             // 
             // buildButton
             // 
-            this.buildButton.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.buildButton.BackColor = System.Drawing.Color.White;
             this.buildButton.Location = new System.Drawing.Point(124, 10);
             this.buildButton.Name = "buildButton";
             this.buildButton.Size = new System.Drawing.Size(40, 23);
             this.buildButton.TabIndex = 3;
             this.buildButton.Text = "Build";
             this.buildButton.UseVisualStyleBackColor = false;
-            this.buildButton.Click += new System.EventHandler(this.startButton_Click);
+            this.buildButton.Click += new System.EventHandler(this.OnBuildButtonClick);
             // 
             // startButton
             // 
             this.startButton.AccessibleRole = System.Windows.Forms.AccessibleRole.TitleBar;
+            this.startButton.BackColor = System.Drawing.Color.White;
             this.startButton.Location = new System.Drawing.Point(170, 10);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(40, 23);
             this.startButton.TabIndex = 4;
             this.startButton.Text = "Start";
-            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.UseVisualStyleBackColor = false;
             this.startButton.Click += new System.EventHandler(this.OnStartButtonClick);
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.inputTabPage);
+            this.tabControl.Controls.Add(this.saddleTabPage);
+            this.tabControl.Controls.Add(this.paretoTabPage);
+            this.tabControl.Location = new System.Drawing.Point(5, 39);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(294, 20);
+            this.tabControl.TabIndex = 5;
+            // 
+            // saddleTabPage
+            // 
+            this.saddleTabPage.Location = new System.Drawing.Point(4, 22);
+            this.saddleTabPage.Name = "saddleTabPage";
+            this.saddleTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.saddleTabPage.Size = new System.Drawing.Size(286, 0);
+            this.saddleTabPage.TabIndex = 1;
+            this.saddleTabPage.Text = "Седловая точка";
+            this.saddleTabPage.UseVisualStyleBackColor = true;
+            // 
+            // paretoTabPage
+            // 
+            this.paretoTabPage.Location = new System.Drawing.Point(4, 22);
+            this.paretoTabPage.Name = "paretoTabPage";
+            this.paretoTabPage.Size = new System.Drawing.Size(286, 0);
+            this.paretoTabPage.TabIndex = 2;
+            this.paretoTabPage.Text = "Парето";
+            this.paretoTabPage.UseVisualStyleBackColor = true;
+            // 
+            // inputTabPage
+            // 
+            this.inputTabPage.Location = new System.Drawing.Point(4, 22);
+            this.inputTabPage.Name = "inputTabPage";
+            this.inputTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.inputTabPage.Size = new System.Drawing.Size(286, 0);
+            this.inputTabPage.TabIndex = 0;
+            this.inputTabPage.Text = "Исходные данные";
+            this.inputTabPage.UseVisualStyleBackColor = true;
+            // 
+            // grid
+            // 
+            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.Location = new System.Drawing.Point(5, 61);
+            this.grid.Name = "grid";
+            this.grid.Size = new System.Drawing.Size(286, 194);
+            this.grid.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -95,14 +141,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightCoral;
             this.ClientSize = new System.Drawing.Size(295, 255);
+            this.Controls.Add(this.grid);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.buildButton);
             this.Controls.Add(this.mTextBox);
             this.Controls.Add(this.gameModeSwitchButton);
-            this.Controls.Add(this.grid);
             this.Name = "MainForm";
             this.Text = "ОПР 6";
             this.Resize += new System.EventHandler(this.OnResize);
+            this.tabControl.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -110,12 +158,15 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.Button gameModeSwitchButton;
         private System.Windows.Forms.TextBox mTextBox;
         private System.Windows.Forms.Button buildButton;
         private System.Windows.Forms.Button startButton;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage saddleTabPage;
+        private System.Windows.Forms.TabPage paretoTabPage;
+        private System.Windows.Forms.TabPage inputTabPage;
+        private System.Windows.Forms.DataGridView grid;
     }
 }
 

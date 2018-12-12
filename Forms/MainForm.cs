@@ -17,9 +17,15 @@ namespace Lomtseu
         private const Int32 defaultMValue = 5;
 
         private Boolean isBuilded = false;
+        private Boolean isStarted = false;
         private Boolean isMChanged = false;
+        private Boolean isModeChanged = false;
         private Int32 mValue;
         private GameModes gameMode;
+        private GameModes selectedGameMode;
+        private Table inputTable;
+        private Table saddleTable;
+        private Table paretoTable;
 
         protected Int32 M {
             get {
@@ -54,8 +60,7 @@ namespace Lomtseu
 
             this.mValue = MainForm.defaultMValue;
 
-            this.ResizeLayout();
-            this.UpdateStartButton();
+            this.UpdateLayout();
             this.OnGameModeChange(GameModes.MxN);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
             //var a = (new GraphForm()).ShowDialog(); // DEBUG
@@ -65,11 +70,33 @@ namespace Lomtseu
         {
             var height = 40;
 
-            this.grid.Location = new Point(0, height);
-            this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - height);
+            this.tabControl.Location = new Point(0, height);
+            this.tabControl.Size = new Size(this.ClientSize.Width, this.tabControl.Height);
+            this.grid.Location = new Point(0, (this.tabControl.Location.Y + this.tabControl.Size.Height));
+            this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - (this.tabControl.Location.Y + this.tabControl.Size.Height));
         }
 
-        protected void UpdateGameMode(GameModes gameMode) {
+        protected void UpdateLayout()
+        {
+            this.ResizeLayout();
+
+            this.mTextBox.BackColor = this.isMChanged ? Color.Yellow : Color.White;
+            this.buildButton.BackColor = this.isModeChanged || this.isMChanged ? Color.Yellow : Color.White;
+            this.startButton.Enabled = this.isBuilded;
+
+            this.tabControl.TabPages.Clear();
+            if (this.isBuilded)
+            {
+                this.tabControl.TabPages.Add(inputTabPage);
+            }
+            if (this.isStarted)
+            {
+                this.tabControl.TabPages.Add(saddleTabPage);
+                this.tabControl.TabPages.Add(paretoTabPage);
+            }
+        }
+
+        protected void UpdateSelectedGameMode(GameModes gameMode) {
             var labelString = "";
             var labelXValue = 0;
             var inputXValue = 0;
@@ -87,24 +114,14 @@ namespace Lomtseu
             this.gameModeSwitchButton.Text = labelString;
             this.gameModeSwitchButton.Location = new Point(labelXValue, this.gameModeSwitchButton.Location.Y);
             this.mTextBox.Location = new Point(inputXValue, this.mTextBox.Location.Y);
-
-            {
-
-            }
-        }
-
-        protected void UpdateMTextBox() {
-            this.mTextBox.BackColor = this.isMChanged ? Color.LightYellow : Color.White;
-        }
-
-        protected void UpdateStartButton()
-        {
-            this.startButton.Enabled = this.isBuilded;
         }
 
         private void OnGameModeChange(GameModes gameMode) {
-            this.gameMode = gameMode;
-            this.UpdateGameMode(this.gameMode);
+            this.isModeChanged = this.gameMode != gameMode;
+            this.selectedGameMode = gameMode;
+
+            this.UpdateSelectedGameMode(this.selectedGameMode);
+            this.UpdateLayout();
         }
 
         private void OnResize(object sender, EventArgs e)
@@ -113,24 +130,24 @@ namespace Lomtseu
         }
 
         private void OnGameModeSwitchButtonClick(Object sender, EventArgs e) {
-            this.OnGameModeChange(this.gameMode == GameModes.MxN ? GameModes.NxM : GameModes.MxN);
+            this.OnGameModeChange(this.selectedGameMode == GameModes.MxN ? GameModes.NxM : GameModes.MxN);
         }
 
         private void OnMTextBoxLeave(Object sender, EventArgs e) {
-            if (this.mValue != this.M) {
-                this.isMChanged = true;
-            }
-            this.UpdateMTextBox();
+            this.isMChanged = this.mValue != this.M;
+
+            this.UpdateLayout();
         }
 
-        private void startButton_Click(Object sender, EventArgs e) {
+        private void OnBuildButtonClick(Object sender, EventArgs e) {
             var rowsValue = 0;
             var colsValue = 0;
 
+            this.isModeChanged = false;
             this.isBuilded = true;
-            this.UpdateStartButton();
             this.M = this.M;
 
+            this.gameMode = selectedGameMode;
             if (this.gameMode == GameModes.MxN) {
                 rowsValue = this.M;
                 colsValue = 2;
@@ -140,10 +157,13 @@ namespace Lomtseu
             }
 
             {
-                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell(r.ToString()));
+                Table table = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell(r.ToString()));
 
-                this.grid.Load(t);
+                this.grid.Load(table);
+                this.inputTable = table;
             }
+
+            this.UpdateLayout();
         }
 
         private void OnStartButtonClick(Object sender, EventArgs e) {
@@ -172,6 +192,10 @@ namespace Lomtseu
                     }
                     r++;
                 }
+            }
+            // Сохраняем inputTable
+            {
+                // TODO: сохранять таблицу в inputTable
             }
             // Седловая точка
             {
@@ -255,9 +279,12 @@ namespace Lomtseu
                     }
 
                     this.grid.Load(table);
+                    this.saddleTable = table;
                 }
 
             }
+
+            this.UpdateLayout();
         }
     }
 }
