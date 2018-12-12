@@ -26,6 +26,9 @@ namespace Lomtseu
         private Table inputTable;
         private Table saddleTable;
         private Table paretoTable;
+        private Double[][] normalizedArray;
+        private Double[][] strategiesArray;
+        private Double[][] paretoArray;
 
         protected Int32 M {
             get {
@@ -166,7 +169,8 @@ namespace Lomtseu
             this.UpdateLayout();
         }
 
-        private void OnStartButtonClick(Object sender, EventArgs e) {
+        private void OnStartButtonClick(Object sender, EventArgs e)
+        {
             Double[][] array;
             var rowsValue = this.grid.Rows.Count - 1;
             var colsValue = this.grid.Columns.Count;
@@ -180,11 +184,14 @@ namespace Lomtseu
             {
                 var r = 0;
 
-                foreach (DataGridViewRow row in this.grid.Rows) {
+                foreach (DataGridViewRow row in this.grid.Rows)
+                {
                     var c = 0;
 
-                    if (r < this.grid.Rows.Count - 1) {
-                        foreach (DataGridViewTextBoxCell col in row.Cells) {
+                    if (r < this.grid.Rows.Count - 1)
+                    {
+                        foreach (DataGridViewTextBoxCell col in row.Cells)
+                        {
                             array[r][c] = Double.Parse(col.Value as String);
 
                             c++;
@@ -196,6 +203,9 @@ namespace Lomtseu
             // Сохраняем inputTable
             {
                 // TODO: сохранять таблицу в inputTable
+                this.strategiesArray = array;
+                this.normalizedArray = this.DeleteNonPareto(this.strategiesArray);
+                this.paretoArray = this.DeleteNonPareto(this.normalizedArray);
             }
             this.isStarted = true;
 
@@ -205,13 +215,16 @@ namespace Lomtseu
                 Double[] minByRowArray = new Double[rowsValue];
                 Double[] maxByColArray = new Double[colsValue];
 
-                for (var r = 0; r < rowsValue; r++) {
+                for (var r = 0; r < rowsValue; r++)
+                {
                     minByRowArray[r] = array[r].Min();
                 }
-                for (var c = 0; c < colsValue; c++) {
+                for (var c = 0; c < colsValue; c++)
+                {
                     var maxValue = Double.MinValue;
 
-                    for (var r = 0; r < rowsValue; r++) {
+                    for (var r = 0; r < rowsValue; r++)
+                    {
                         maxValue = Math.Max(array[r][c], maxValue);
                     }
                     maxByColArray[c] = maxValue;
@@ -229,8 +242,10 @@ namespace Lomtseu
                     {
                         var i = 0;
 
-                        foreach (var minByRowValue in minByRowArray) {
-                            if (minByRowValue == maxByMinByRowValue) {
+                        foreach (var minByRowValue in minByRowArray)
+                        {
+                            if (minByRowValue == maxByMinByRowValue)
+                            {
                                 maxByRowsCountValue++;
                                 maxByRowsIndexValue = i;
                             }
@@ -240,8 +255,10 @@ namespace Lomtseu
                     {
                         var i = 0;
 
-                        foreach (var maxByColValue in maxByColArray) {
-                            if (maxByColValue == minByMaxByColValue) {
+                        foreach (var maxByColValue in maxByColArray)
+                        {
+                            if (maxByColValue == minByMaxByColValue)
+                            {
                                 minByColsCountValue++;
                                 minByColsIndexValue = i;
                             }
@@ -250,32 +267,40 @@ namespace Lomtseu
                     }
 
                     table = new Table(rowsValue + 1, colsValue + 1).ForEach(c => new TextCell(""));
-                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1) {
+                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1)
+                    {
                         point = new Point(minByColsIndexValue, maxByRowsIndexValue);
                     }
 
-                    for (var r = 0; r < rowsValue; r++) {
-                        for (var c = 0; c < colsValue; c++) {
-                            var isSaddle = (point != null && (r == point?.Y && c == point?.X));
+                    for (var r = 0; r < rowsValue; r++)
+                    {
+                        for (var c = 0; c < colsValue; c++)
+                        {
+                            var isSaddle = (point != null && (r == point.Value.Y && c == point.Value.X));
 
-                            table[r, c] = new TextCell(array[r][c].ToString()) {
+                            table[r, c] = new TextCell(array[r][c].ToString())
+                            {
                                 Fore = isSaddle ? Color.DarkGreen : Color.Black,
                             };
                         }
                     }
-                    for (var r = 0; r < rowsValue; r++) {
+                    for (var r = 0; r < rowsValue; r++)
+                    {
                         var isMaxMin = minByRowArray[r] == maxByMinByRowValue;
                         var textString = String.Format("{0}{1}", minByRowArray[r], isMaxMin ? " *" : "");
 
-                        table[r, colsValue] = new TextCell(textString) {
+                        table[r, colsValue] = new TextCell(textString)
+                        {
                             Fore = isMaxMin ? Color.Red : Color.Black
                         };
                     }
-                    for (var c = 0; c < colsValue; c++) {
+                    for (var c = 0; c < colsValue; c++)
+                    {
                         var isMinMax = maxByColArray[c] == minByMaxByColValue;
                         var textString = String.Format("{0}{1}", maxByColArray[c], isMinMax ? " *" : "");
 
-                        table[rowsValue, c] = new TextCell(textString) {
+                        table[rowsValue, c] = new TextCell(textString)
+                        {
                             Fore = isMinMax ? Color.Red : Color.Black
                         };
                     }
@@ -285,24 +310,100 @@ namespace Lomtseu
                 }
 
             }
+            // Парето
+            {
+                for (var r = 0; r < rowsValue; r++)
+                {
+                    for (var c = 0; c < colsValue; c++)
+                    {
+                        
+                    }
+                }
+            }
 
             this.UpdateLayout();
         }
 
         private void OnGraphButtonClick(object sender, EventArgs e)
         {
-            var normStategiesArray = new double[2][];
-
             // Нормализуем массив стратегий:
             {
                 // TODO: нормализация массива
 
                 // DEBUG
-                normStategiesArray[0] = new double[7] { -6, -1, 1, 4, 7, 4, 3 };
-                normStategiesArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
+                this.normalizedArray = new Double[2][];
+                this.normalizedArray[0] = new double[7] { -6, -1, 1, 4, 7, 4, 3 };
+                this.normalizedArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
             }
 
-            (new GraphForm(normStategiesArray)).ShowDialog();
+            (new GraphForm(this.normalizedArray)).ShowDialog();
+        }
+
+        public Double[][] Normalize(Double[][] array)
+        {
+            Double[][] normArray = new Double[2][];
+
+            if (true) {
+                throw new NotImplementedException();
+            }
+
+            return normArray;
+        }
+
+        public Double[][] DeleteNonPareto(Double[][] array)
+        {
+            Double[][] paretoArray = null;
+
+            {
+                var lengthValue = array[0].Count();
+                var isDominatedArray = new Boolean[lengthValue];
+
+                for (var f = 0; f < lengthValue - 1; f++)
+                {
+                    for (var s = f + 1; s < lengthValue; s++)
+                    {
+                        var isDominated = true;
+
+                        for (var k = 0; k < 2; k++)
+                        {
+                            isDominated = isDominated && (array[f][k] < array[s][k]);
+                        }
+
+                        isDominatedArray[s] = isDominatedArray[s] && isDominated;
+                    }
+                }
+
+                {
+                    var newLengthValue = 0;
+
+                    for (var p = 0; p < array[0].Length; p++)
+                    {
+                        newLengthValue += !isDominatedArray[p] ? 1 : 0;
+                    }
+
+                    paretoArray = new Double[2][];
+                    for (var c = 0; c < 2; c++)
+                    {
+                        paretoArray[c] = new Double[newLengthValue];
+                    }
+
+                    {
+                        var i = 0;
+
+                        for (var r = 0; r < array[0].Length; r++)
+                        {
+                            if (!isDominatedArray[r]) {
+                                for (var c = 0; c < 2; c++) {
+                                    paretoArray[c][i] = array[c][r];
+                                }
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return paretoArray;
         }
     }
 }

@@ -11,7 +11,10 @@ namespace Lomtseu.GamesTheory {
         private GameModes gameMode;
 
         protected Int32 M {
-            get;
+            get
+            {
+                return 0;
+            }
         }
         protected Int32 N {
             get {

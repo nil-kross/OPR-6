@@ -81,10 +81,23 @@ namespace Lomtseu
 
                     for (var i = 0; i < deltaValue; i++)
                     {
-                        var currHeightValue = i * hieghtValue;
+                        var currHeightValue = this.ClientSize.Height - i * hieghtValue;
 
                         graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (1 - gapValue)), (Int32)currHeightValue, (Int32)(this.ClientSize.Width * (1 - gapValue)) + 5, (Int32)currHeightValue);
                         graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (0 + gapValue)), (Int32)currHeightValue, (Int32)(this.ClientSize.Width * (0 + gapValue)) - 5, (Int32)currHeightValue);
+
+                        Action<int, float> mark = (int c, float x) =>
+                        {
+                            var number = i + minValue;
+
+                            if (strategiesArray[c].Contains(number))
+                            {
+                                graphics.DrawString(number.ToString(), new Font("Times New Roman", 14.0f), new SolidBrush(Color.Red), new PointF((float)x, (float)currHeightValue));
+                            }
+                        };
+
+                        mark(0, (float)(this.ClientSize.Width * (1 - gapValue)));
+                        mark(1, (float)(this.ClientSize.Width * (0 + gapValue)));
                     }
                 }
             }
