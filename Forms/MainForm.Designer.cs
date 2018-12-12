@@ -33,10 +33,11 @@
             this.buildButton = new System.Windows.Forms.Button();
             this.startButton = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.inputTabPage = new System.Windows.Forms.TabPage();
             this.saddleTabPage = new System.Windows.Forms.TabPage();
             this.paretoTabPage = new System.Windows.Forms.TabPage();
-            this.inputTabPage = new System.Windows.Forms.TabPage();
             this.grid = new System.Windows.Forms.DataGridView();
+            this.graphButton = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
@@ -69,9 +70,9 @@
             this.buildButton.BackColor = System.Drawing.Color.White;
             this.buildButton.Location = new System.Drawing.Point(124, 10);
             this.buildButton.Name = "buildButton";
-            this.buildButton.Size = new System.Drawing.Size(40, 23);
+            this.buildButton.Size = new System.Drawing.Size(115, 23);
             this.buildButton.TabIndex = 3;
-            this.buildButton.Text = "Build";
+            this.buildButton.Text = "Построить таблицу";
             this.buildButton.UseVisualStyleBackColor = false;
             this.buildButton.Click += new System.EventHandler(this.OnBuildButtonClick);
             // 
@@ -79,11 +80,11 @@
             // 
             this.startButton.AccessibleRole = System.Windows.Forms.AccessibleRole.TitleBar;
             this.startButton.BackColor = System.Drawing.Color.White;
-            this.startButton.Location = new System.Drawing.Point(170, 10);
+            this.startButton.Location = new System.Drawing.Point(245, 10);
             this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(40, 23);
+            this.startButton.Size = new System.Drawing.Size(50, 23);
             this.startButton.TabIndex = 4;
-            this.startButton.Text = "Start";
+            this.startButton.Text = "Старт!";
             this.startButton.UseVisualStyleBackColor = false;
             this.startButton.Click += new System.EventHandler(this.OnStartButtonClick);
             // 
@@ -97,6 +98,16 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(294, 20);
             this.tabControl.TabIndex = 5;
+            // 
+            // inputTabPage
+            // 
+            this.inputTabPage.Location = new System.Drawing.Point(4, 22);
+            this.inputTabPage.Name = "inputTabPage";
+            this.inputTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.inputTabPage.Size = new System.Drawing.Size(286, 0);
+            this.inputTabPage.TabIndex = 0;
+            this.inputTabPage.Text = "Исходные данные";
+            this.inputTabPage.UseVisualStyleBackColor = true;
             // 
             // saddleTabPage
             // 
@@ -117,16 +128,6 @@
             this.paretoTabPage.Text = "Парето";
             this.paretoTabPage.UseVisualStyleBackColor = true;
             // 
-            // inputTabPage
-            // 
-            this.inputTabPage.Location = new System.Drawing.Point(4, 22);
-            this.inputTabPage.Name = "inputTabPage";
-            this.inputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.inputTabPage.Size = new System.Drawing.Size(286, 0);
-            this.inputTabPage.TabIndex = 0;
-            this.inputTabPage.Text = "Исходные данные";
-            this.inputTabPage.UseVisualStyleBackColor = true;
-            // 
             // grid
             // 
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -135,12 +136,24 @@
             this.grid.Size = new System.Drawing.Size(286, 194);
             this.grid.TabIndex = 6;
             // 
+            // graphButton
+            // 
+            this.graphButton.BackColor = System.Drawing.Color.White;
+            this.graphButton.Location = new System.Drawing.Point(301, 10);
+            this.graphButton.Name = "graphButton";
+            this.graphButton.Size = new System.Drawing.Size(95, 23);
+            this.graphButton.TabIndex = 7;
+            this.graphButton.Text = "Граф. решение";
+            this.graphButton.UseVisualStyleBackColor = false;
+            this.graphButton.Click += new System.EventHandler(this.OnGraphButtonClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightCoral;
-            this.ClientSize = new System.Drawing.Size(295, 255);
+            this.ClientSize = new System.Drawing.Size(465, 255);
+            this.Controls.Add(this.graphButton);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.startButton);
@@ -167,6 +180,7 @@
         private System.Windows.Forms.TabPage paretoTabPage;
         private System.Windows.Forms.TabPage inputTabPage;
         private System.Windows.Forms.DataGridView grid;
+        private System.Windows.Forms.Button graphButton;
     }
 }
 

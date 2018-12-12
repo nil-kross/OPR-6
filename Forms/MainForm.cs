@@ -63,7 +63,6 @@ namespace Lomtseu
             this.UpdateLayout();
             this.OnGameModeChange(GameModes.MxN);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
-            //var a = (new GraphForm()).ShowDialog(); // DEBUG
         }
 
         protected void ResizeLayout()
@@ -83,6 +82,7 @@ namespace Lomtseu
             this.mTextBox.BackColor = this.isMChanged ? Color.Yellow : Color.White;
             this.buildButton.BackColor = this.isModeChanged || this.isMChanged ? Color.Yellow : Color.White;
             this.startButton.Enabled = this.isBuilded;
+            this.graphButton.Enabled = this.isStarted;
 
             this.tabControl.TabPages.Clear();
             if (this.isBuilded)
@@ -197,6 +197,8 @@ namespace Lomtseu
             {
                 // TODO: сохранять таблицу в inputTable
             }
+            this.isStarted = true;
+
             // Седловая точка
             {
                 Point? point = null;
@@ -285,6 +287,22 @@ namespace Lomtseu
             }
 
             this.UpdateLayout();
+        }
+
+        private void OnGraphButtonClick(object sender, EventArgs e)
+        {
+            var normStategiesArray = new double[2][];
+
+            // Нормализуем массив стратегий:
+            {
+                // TODO: нормализация массива
+
+                // DEBUG
+                normStategiesArray[0] = new double[7] { -6, -1, 1, 4, 7, 4, 3 };
+                normStategiesArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
+            }
+
+            (new GraphForm(normStategiesArray)).ShowDialog();
         }
     }
 }

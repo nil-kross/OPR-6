@@ -15,13 +15,11 @@ namespace Lomtseu
     {
         private Double[][] strategiesArray;
 
-        public GraphForm(Double[][] strategies = null)
+        public GraphForm(Double[][] strategies)
         {
             InitializeComponent();
 
-            this.strategiesArray = strategies ?? new double[2][];
-            this.strategiesArray[0] = new double[7] { -6, -1, 1, 4, 7, 4, 3 };
-            this.strategiesArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
+            this.strategiesArray = strategies;
 
             this.ResizeLayout();
         }
