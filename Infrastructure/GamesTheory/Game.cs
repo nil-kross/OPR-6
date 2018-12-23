@@ -26,9 +26,9 @@ namespace Lomtseu.GamesTheory {
             this.array = array;
 
             if (array.Length == 2) {
-                this.gameMode = GameModes.MxN;
+                this.gameMode = GameModes.MPerTwo;
             } else if (array.Length == 2) {
-                this.gameMode = GameModes.NxM;
+                this.gameMode = GameModes.TwoPerM;
             } else {
                 throw new Exception();
             }
@@ -41,7 +41,7 @@ namespace Lomtseu.GamesTheory {
                 Int32 count = this.M;
                 bool[] isDominated = new bool[count];
 
-                if (this.gameMode == GameModes.MxN) {
+                if (this.gameMode == GameModes.MPerTwo) {
                 } else {
                 }
             }

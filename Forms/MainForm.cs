@@ -64,18 +64,47 @@ namespace Lomtseu
             this.mValue = MainForm.defaultMValue;
 
             this.UpdateLayout();
-            this.OnGameModeChange(GameModes.MxN);
+            this.OnGameModeChange(GameModes.MPerTwo);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
         }
 
         protected void ResizeLayout()
         {
-            var height = 40;
+            var x0 = 7;
+            var x1 = 58;
+            var panelPoint = new Point(0, 0);
+            var panelSize = new Size(this.ClientSize.Width, this.panel.Height);
+            var gridPoint = new Point(0, panelPoint.Y + panelSize.Height);
+            var gridSize = new Size(this.ClientSize.Width, this.ClientSize.Height - gridPoint.Y);
+            var tabControlSize = new Size(this.ClientSize.Width, this.tabControl.Height);
+            var tabControlPoint = new Point(0, panelSize.Height - tabControlSize.Height);
+            var nButtonPoint = new Point(this.selectedGameMode == GameModes.TwoPerM ? x0 : x1, this.nButton.Location.Y);
+            var mTextBoxPoint = new Point(this.selectedGameMode == GameModes.TwoPerM ? x1 : x0, this.mTextBox.Location.Y);
 
-            this.tabControl.Location = new Point(0, height);
-            this.tabControl.Size = new Size(this.ClientSize.Width, this.tabControl.Height);
-            this.grid.Location = new Point(0, (this.tabControl.Location.Y + this.tabControl.Size.Height));
-            this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - (this.tabControl.Location.Y + this.tabControl.Size.Height));
+            if (this.panel.Location != panelPoint) {
+                this.panel.Location = panelPoint;
+            }
+            if (this.panel.Size != panelSize) {
+                this.panel.Size = panelSize;
+            }
+            if (this.grid.Location != gridPoint) {
+                this.grid.Location = gridPoint;
+            }
+            if (this.grid.Size != gridSize) {
+                this.grid.Size = gridSize;
+            }
+            if (this.tabControl.Size != tabControlSize) {
+                this.tabControl.Size = tabControlSize;
+            }
+            if (this.tabControl.Location != tabControlPoint) {
+                this.tabControl.Location = tabControlPoint;
+            }
+            if (this.nButton.Location != nButtonPoint) {
+                this.nButton.Location = nButtonPoint;
+            }
+            if (this.mTextBox.Location != mTextBoxPoint) {
+                this.mTextBox.Location = mTextBoxPoint;
+            }
         }
 
         protected void UpdateLayout()
@@ -99,31 +128,10 @@ namespace Lomtseu
             }
         }
 
-        protected void UpdateSelectedGameMode(GameModes gameMode) {
-            var labelString = "";
-            var labelXValue = 0;
-            var inputXValue = 0;
-
-            if (gameMode == GameModes.MxN) {
-                labelString = "(<=>) M x 2";
-                labelXValue = 12;
-                inputXValue = 88;
-            } else {
-                labelString = "2 x M (<=>)";
-                labelXValue = 48;
-                inputXValue = 12;
-            }
-
-            this.gameModeSwitchButton.Text = labelString;
-            this.gameModeSwitchButton.Location = new Point(labelXValue, this.gameModeSwitchButton.Location.Y);
-            this.mTextBox.Location = new Point(inputXValue, this.mTextBox.Location.Y);
-        }
-
         private void OnGameModeChange(GameModes gameMode) {
             this.isModeChanged = this.gameMode != gameMode;
             this.selectedGameMode = gameMode;
 
-            this.UpdateSelectedGameMode(this.selectedGameMode);
             this.UpdateLayout();
         }
 
@@ -133,7 +141,7 @@ namespace Lomtseu
         }
 
         private void OnGameModeSwitchButtonClick(Object sender, EventArgs e) {
-            this.OnGameModeChange(this.selectedGameMode == GameModes.MxN ? GameModes.NxM : GameModes.MxN);
+            this.OnGameModeChange(this.selectedGameMode == GameModes.MPerTwo ? GameModes.TwoPerM : GameModes.MPerTwo);
         }
 
         private void OnMTextBoxLeave(Object sender, EventArgs e) {
@@ -151,7 +159,7 @@ namespace Lomtseu
             this.M = this.M;
 
             this.gameMode = selectedGameMode;
-            if (this.gameMode == GameModes.MxN) {
+            if (this.gameMode == GameModes.MPerTwo) {
                 rowsValue = this.M;
                 colsValue = 2;
             } else {

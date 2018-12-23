@@ -38,18 +38,21 @@
             this.paretoTabPage = new System.Windows.Forms.TabPage();
             this.grid = new System.Windows.Forms.DataGridView();
             this.graphButton = new System.Windows.Forms.Button();
+            this.panel = new System.Windows.Forms.Panel();
+            this.nButton = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
+            this.panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // gameModeSwitchButton
             // 
             this.gameModeSwitchButton.BackColor = System.Drawing.Color.White;
-            this.gameModeSwitchButton.Location = new System.Drawing.Point(48, 10);
+            this.gameModeSwitchButton.Location = new System.Drawing.Point(37, 3);
             this.gameModeSwitchButton.Name = "gameModeSwitchButton";
-            this.gameModeSwitchButton.Size = new System.Drawing.Size(70, 23);
+            this.gameModeSwitchButton.Size = new System.Drawing.Size(21, 23);
             this.gameModeSwitchButton.TabIndex = 1;
-            this.gameModeSwitchButton.Text = "(<=>) M x 2";
+            this.gameModeSwitchButton.Text = "X";
             this.gameModeSwitchButton.UseVisualStyleBackColor = false;
             this.gameModeSwitchButton.Click += new System.EventHandler(this.OnGameModeSwitchButtonClick);
             // 
@@ -57,7 +60,7 @@
             // 
             this.mTextBox.BackColor = System.Drawing.Color.Yellow;
             this.mTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.mTextBox.Location = new System.Drawing.Point(12, 12);
+            this.mTextBox.Location = new System.Drawing.Point(58, 3);
             this.mTextBox.Name = "mTextBox";
             this.mTextBox.Size = new System.Drawing.Size(30, 21);
             this.mTextBox.TabIndex = 2;
@@ -68,7 +71,7 @@
             // buildButton
             // 
             this.buildButton.BackColor = System.Drawing.Color.White;
-            this.buildButton.Location = new System.Drawing.Point(124, 10);
+            this.buildButton.Location = new System.Drawing.Point(94, 3);
             this.buildButton.Name = "buildButton";
             this.buildButton.Size = new System.Drawing.Size(115, 23);
             this.buildButton.TabIndex = 3;
@@ -80,7 +83,7 @@
             // 
             this.startButton.AccessibleRole = System.Windows.Forms.AccessibleRole.TitleBar;
             this.startButton.BackColor = System.Drawing.Color.White;
-            this.startButton.Location = new System.Drawing.Point(245, 10);
+            this.startButton.Location = new System.Drawing.Point(215, 3);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(50, 23);
             this.startButton.TabIndex = 4;
@@ -93,7 +96,7 @@
             this.tabControl.Controls.Add(this.inputTabPage);
             this.tabControl.Controls.Add(this.saddleTabPage);
             this.tabControl.Controls.Add(this.paretoTabPage);
-            this.tabControl.Location = new System.Drawing.Point(5, 39);
+            this.tabControl.Location = new System.Drawing.Point(3, 32);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(294, 20);
@@ -131,7 +134,7 @@
             // grid
             // 
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.grid.Location = new System.Drawing.Point(5, 61);
+            this.grid.Location = new System.Drawing.Point(5, 172);
             this.grid.Name = "grid";
             this.grid.Size = new System.Drawing.Size(286, 194);
             this.grid.TabIndex = 6;
@@ -139,7 +142,7 @@
             // graphButton
             // 
             this.graphButton.BackColor = System.Drawing.Color.White;
-            this.graphButton.Location = new System.Drawing.Point(301, 10);
+            this.graphButton.Location = new System.Drawing.Point(271, 3);
             this.graphButton.Name = "graphButton";
             this.graphButton.Size = new System.Drawing.Size(95, 23);
             this.graphButton.TabIndex = 7;
@@ -147,26 +150,47 @@
             this.graphButton.UseVisualStyleBackColor = false;
             this.graphButton.Click += new System.EventHandler(this.OnGraphButtonClick);
             // 
+            // panel
+            // 
+            this.panel.BackColor = System.Drawing.Color.LightCoral;
+            this.panel.Controls.Add(this.nButton);
+            this.panel.Controls.Add(this.mTextBox);
+            this.panel.Controls.Add(this.graphButton);
+            this.panel.Controls.Add(this.tabControl);
+            this.panel.Controls.Add(this.gameModeSwitchButton);
+            this.panel.Controls.Add(this.buildButton);
+            this.panel.Controls.Add(this.startButton);
+            this.panel.Location = new System.Drawing.Point(5, 3);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(498, 53);
+            this.panel.TabIndex = 8;
+            this.panel.Click += new System.EventHandler(this.OnMTextBoxLeave);
+            // 
+            // nButton
+            // 
+            this.nButton.Location = new System.Drawing.Point(7, 3);
+            this.nButton.Name = "nButton";
+            this.nButton.Size = new System.Drawing.Size(30, 23);
+            this.nButton.TabIndex = 8;
+            this.nButton.Text = "2";
+            this.nButton.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.LightCoral;
-            this.ClientSize = new System.Drawing.Size(465, 255);
-            this.Controls.Add(this.graphButton);
+            this.BackColor = System.Drawing.Color.Turquoise;
+            this.ClientSize = new System.Drawing.Size(919, 378);
+            this.Controls.Add(this.panel);
             this.Controls.Add(this.grid);
-            this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.startButton);
-            this.Controls.Add(this.buildButton);
-            this.Controls.Add(this.mTextBox);
-            this.Controls.Add(this.gameModeSwitchButton);
             this.Name = "MainForm";
             this.Text = "ОПР 6";
             this.Resize += new System.EventHandler(this.OnResize);
             this.tabControl.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
+            this.panel.ResumeLayout(false);
+            this.panel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -181,6 +205,8 @@
         private System.Windows.Forms.TabPage inputTabPage;
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.Button graphButton;
+        private System.Windows.Forms.Panel panel;
+        private System.Windows.Forms.Button nButton;
     }
 }
 
