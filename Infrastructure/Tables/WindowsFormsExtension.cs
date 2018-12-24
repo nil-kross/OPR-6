@@ -45,5 +45,33 @@ namespace Lomtseu.Tables
                 grid.Rows.Add(row);
             }
         }
+
+        public static Table Save(this DataGridView grid) {
+            Table table = null;
+
+            if (grid != null) {
+                table = new Table(grid.RowCount - 1, grid.ColumnCount).ForEach((cell) => new TextCell());
+
+                {
+                    var r = 0;
+
+                    foreach (DataGridViewRow row in grid.Rows) {
+                        if (r < grid.RowCount - 1) {
+                            var c = 0;
+
+                            foreach (DataGridViewTextBoxCell col in row.Cells) {
+                                table[r, c] = new TextCell(col.Value as String);
+
+                                c++;
+                            }
+                        }
+
+                        r++;
+                    }
+                }
+            }
+
+            return table;
+        }
     }
 }

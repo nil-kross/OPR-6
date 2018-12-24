@@ -10,10 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lomtseu
-{
-    public partial class MainForm : Form
-    {
+namespace Lomtseu {
+    public partial class MainForm : Form {
         private const Int32 defaultMValue = 5;
 
         private Boolean isBuilded = false;
@@ -57,8 +55,7 @@ namespace Lomtseu
             }
         }
 
-        public MainForm()
-        {
+        public MainForm() {
             InitializeComponent();
 
             this.mValue = MainForm.defaultMValue;
@@ -68,8 +65,7 @@ namespace Lomtseu
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
         }
 
-        protected void ResizeLayout()
-        {
+        protected void ResizeLayout() {
             var x0 = 7;
             var x1 = 58;
             var panelPoint = new Point(0, 0);
@@ -107,8 +103,7 @@ namespace Lomtseu
             }
         }
 
-        protected void UpdateLayout()
-        {
+        protected void UpdateLayout() {
             this.ResizeLayout();
 
             this.mTextBox.BackColor = this.isMChanged ? Color.Yellow : Color.White;
@@ -117,12 +112,10 @@ namespace Lomtseu
             this.graphButton.Enabled = this.isStarted;
 
             this.tabControl.TabPages.Clear();
-            if (this.isBuilded)
-            {
+            if (this.isBuilded) {
                 this.tabControl.TabPages.Add(inputTabPage);
             }
-            if (this.isStarted)
-            {
+            if (this.isStarted) {
                 this.tabControl.TabPages.Add(saddleTabPage);
                 this.tabControl.TabPages.Add(paretoTabPage);
             }
@@ -135,8 +128,7 @@ namespace Lomtseu
             this.UpdateLayout();
         }
 
-        private void OnResize(object sender, EventArgs e)
-        {
+        private void OnResize(object sender, EventArgs e) {
             this.ResizeLayout();
         }
 
@@ -175,42 +167,47 @@ namespace Lomtseu
             }
 
             this.UpdateLayout();
+
+            this.tabControl.SelectTab(this.inputTabPage.Name);
         }
 
-        private void OnStartButtonClick(Object sender, EventArgs e)
-        {
+        private void OnStartButtonClick(Object sender, EventArgs e) {
             Double[][] array;
             var rowsValue = this.grid.Rows.Count - 1;
             var colsValue = this.grid.Columns.Count;
 
             array = new Double[rowsValue][];
 
-            for (var r = 0; r < rowsValue; r++)
             {
-                array[r] = new Double[colsValue];
-            }
-            {
-                var r = 0;
+                this.tabControl.SelectTab(this.inputTabPage.Name);
+                this.grid.Load(this.inputTable);
 
-                foreach (DataGridViewRow row in this.grid.Rows)
+                for (var r = 0; r < rowsValue; r++) {
+                    array[r] = new Double[colsValue];
+                }
                 {
-                    var c = 0;
+                    var r = 0;
 
-                    if (r < this.grid.Rows.Count - 1)
-                    {
-                        foreach (DataGridViewTextBoxCell col in row.Cells)
-                        {
-                            array[r][c] = Double.Parse(col.Value as String);
+                    foreach (DataGridViewRow row in this.grid.Rows) {
+                        if (r < this.grid.RowCount - 1) {
+                            var c = 0;
 
-                            c++;
+                            if (r < this.grid.Rows.Count - 1) {
+                                foreach (DataGridViewTextBoxCell col in row.Cells) {
+                                    array[r][c] = Double.Parse(col.Value as String);
+
+                                    c++;
+                                }
+                            }
                         }
+
+                        r++;
                     }
-                    r++;
                 }
             }
             // Сохраняем inputTable
             {
-                // TODO: сохранять таблицу в inputTable
+                this.inputTable = this.grid.Save();
                 this.strategiesArray = array;
                 this.normalizedArray = this.DeleteNonPareto(this.strategiesArray);
                 this.paretoArray = this.DeleteNonPareto(this.normalizedArray);
@@ -223,16 +220,13 @@ namespace Lomtseu
                 Double[] minByRowArray = new Double[rowsValue];
                 Double[] maxByColArray = new Double[colsValue];
 
-                for (var r = 0; r < rowsValue; r++)
-                {
+                for (var r = 0; r < rowsValue; r++) {
                     minByRowArray[r] = array[r].Min();
                 }
-                for (var c = 0; c < colsValue; c++)
-                {
+                for (var c = 0; c < colsValue; c++) {
                     var maxValue = Double.MinValue;
 
-                    for (var r = 0; r < rowsValue; r++)
-                    {
+                    for (var r = 0; r < rowsValue; r++) {
                         maxValue = Math.Max(array[r][c], maxValue);
                     }
                     maxByColArray[c] = maxValue;
@@ -250,10 +244,8 @@ namespace Lomtseu
                     {
                         var i = 0;
 
-                        foreach (var minByRowValue in minByRowArray)
-                        {
-                            if (minByRowValue == maxByMinByRowValue)
-                            {
+                        foreach (var minByRowValue in minByRowArray) {
+                            if (minByRowValue == maxByMinByRowValue) {
                                 maxByRowsCountValue++;
                                 maxByRowsIndexValue = i;
                             }
@@ -263,10 +255,8 @@ namespace Lomtseu
                     {
                         var i = 0;
 
-                        foreach (var maxByColValue in maxByColArray)
-                        {
-                            if (maxByColValue == minByMaxByColValue)
-                            {
+                        foreach (var maxByColValue in maxByColArray) {
+                            if (maxByColValue == minByMaxByColValue) {
                                 minByColsCountValue++;
                                 minByColsIndexValue = i;
                             }
@@ -275,40 +265,32 @@ namespace Lomtseu
                     }
 
                     table = new Table(rowsValue + 1, colsValue + 1).ForEach(c => new TextCell(""));
-                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1)
-                    {
+                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1) {
                         point = new Point(minByColsIndexValue, maxByRowsIndexValue);
                     }
 
-                    for (var r = 0; r < rowsValue; r++)
-                    {
-                        for (var c = 0; c < colsValue; c++)
-                        {
+                    for (var r = 0; r < rowsValue; r++) {
+                        for (var c = 0; c < colsValue; c++) {
                             var isSaddle = (point != null && (r == point.Value.Y && c == point.Value.X));
 
-                            table[r, c] = new TextCell(array[r][c].ToString())
-                            {
+                            table[r, c] = new TextCell(array[r][c].ToString()) {
                                 Fore = isSaddle ? Color.DarkGreen : Color.Black,
                             };
                         }
                     }
-                    for (var r = 0; r < rowsValue; r++)
-                    {
+                    for (var r = 0; r < rowsValue; r++) {
                         var isMaxMin = minByRowArray[r] == maxByMinByRowValue;
                         var textString = String.Format("{0}{1}", minByRowArray[r], isMaxMin ? " *" : "");
 
-                        table[r, colsValue] = new TextCell(textString)
-                        {
+                        table[r, colsValue] = new TextCell(textString) {
                             Fore = isMaxMin ? Color.Red : Color.Black
                         };
                     }
-                    for (var c = 0; c < colsValue; c++)
-                    {
+                    for (var c = 0; c < colsValue; c++) {
                         var isMinMax = maxByColArray[c] == minByMaxByColValue;
                         var textString = String.Format("{0}{1}", maxByColArray[c], isMinMax ? " *" : "");
 
-                        table[rowsValue, c] = new TextCell(textString)
-                        {
+                        table[rowsValue, c] = new TextCell(textString) {
                             Fore = isMinMax ? Color.Red : Color.Black
                         };
                     }
@@ -316,24 +298,22 @@ namespace Lomtseu
                     this.grid.Load(table);
                     this.saddleTable = table;
                 }
-
             }
             // Парето
             {
-                for (var r = 0; r < rowsValue; r++)
-                {
-                    for (var c = 0; c < colsValue; c++)
-                    {
-                        
+                for (var r = 0; r < rowsValue; r++) {
+                    for (var c = 0; c < colsValue; c++) {
+                        // TO DO
                     }
                 }
             }
 
             this.UpdateLayout();
+
+            this.tabControl.SelectTab(this.saddleTabPage.Name);
         }
 
-        private void OnGraphButtonClick(object sender, EventArgs e)
-        {
+        private void OnGraphButtonClick(object sender, EventArgs e) {
             // Нормализуем массив стратегий:
             {
                 // TODO: нормализация массива
@@ -347,8 +327,7 @@ namespace Lomtseu
             (new GraphForm(this.normalizedArray)).ShowDialog();
         }
 
-        public Double[][] Normalize(Double[][] array)
-        {
+        public Double[][] Normalize(Double[][] array) {
             Double[][] normArray = new Double[2][];
 
             if (true) {
@@ -358,22 +337,18 @@ namespace Lomtseu
             return normArray;
         }
 
-        public Double[][] DeleteNonPareto(Double[][] array)
-        {
+        public Double[][] DeleteNonPareto(Double[][] array) {
             Double[][] paretoArray = null;
 
             {
                 var lengthValue = array[0].Count();
                 var isDominatedArray = new Boolean[lengthValue];
 
-                for (var f = 0; f < lengthValue - 1; f++)
-                {
-                    for (var s = f + 1; s < lengthValue; s++)
-                    {
+                for (var f = 0; f < lengthValue - 1; f++) {
+                    for (var s = f + 1; s < lengthValue; s++) {
                         var isDominated = true;
 
-                        for (var k = 0; k < 2; k++)
-                        {
+                        for (var k = 0; k < 2; k++) {
                             isDominated = isDominated && (array[f][k] < array[s][k]);
                         }
 
@@ -384,22 +359,19 @@ namespace Lomtseu
                 {
                     var newLengthValue = 0;
 
-                    for (var p = 0; p < array[0].Length; p++)
-                    {
+                    for (var p = 0; p < array[0].Length; p++) {
                         newLengthValue += !isDominatedArray[p] ? 1 : 0;
                     }
 
                     paretoArray = new Double[2][];
-                    for (var c = 0; c < 2; c++)
-                    {
+                    for (var c = 0; c < 2; c++) {
                         paretoArray[c] = new Double[newLengthValue];
                     }
 
                     {
                         var i = 0;
 
-                        for (var r = 0; r < array[0].Length; r++)
-                        {
+                        for (var r = 0; r < array[0].Length; r++) {
                             if (!isDominatedArray[r]) {
                                 for (var c = 0; c < 2; c++) {
                                     paretoArray[c][i] = array[c][r];
@@ -412,6 +384,19 @@ namespace Lomtseu
             }
 
             return paretoArray;
+        }
+
+        private void OnTabControlSelectedIndexChanged(Object sender, TabControlCancelEventArgs e) {
+
+            if (this.tabControl.SelectedTab == this.inputTabPage) {
+                this.grid.Load(this.inputTable);
+            }
+            if (this.tabControl.SelectedTab == this.saddleTabPage) {
+                this.grid.Load(this.saddleTable);
+            }
+            if (this.tabControl.SelectedTab == this.paretoTabPage) {
+                this.grid.Load(this.paretoTable);
+            }
         }
     }
 }

@@ -101,6 +101,7 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(294, 20);
             this.tabControl.TabIndex = 5;
+            this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.OnTabControlSelectedIndexChanged);
             // 
             // inputTabPage
             // 
