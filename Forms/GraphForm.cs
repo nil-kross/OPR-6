@@ -86,18 +86,23 @@ namespace Lomtseu
                         graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (1 - gapValue)), (Int32)currHeightValue, (Int32)(this.ClientSize.Width * (1 - gapValue)) + 5, (Int32)currHeightValue);
                         graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (0 + gapValue)), (Int32)currHeightValue, (Int32)(this.ClientSize.Width * (0 + gapValue)) - 5, (Int32)currHeightValue);
 
-                        Action<int, float> mark = (int c, float x) =>
+                        Action<int, Sides> mark = (int c, Sides side) =>
                         {
                             var number = i + minValue;
 
                             if (strategiesArray[c].Contains(number))
                             {
-                                graphics.DrawString(number.ToString(), new Font("Times New Roman", 14.0f), new SolidBrush(Color.Red), new PointF((float)x, (float)currHeightValue));
+                                var markString = number.ToString();
+                                var markFont = new Font("Times New Roman", 14.0f);
+                                SizeF markSize = graphics.MeasureString(markString, markFont);
+                                var markX = this.ClientSize.Width * (side == Sides.Right ? 1 - gapValue : 0 + gapValue);
+
+                                graphics.DrawString(markString, markFont, new SolidBrush(Color.Red), new PointF((Single)(markX - markSize.Width / 2 + (side == Sides.Right ? +1 : -1) * (markSize.Width * 1.0)), (Single)(currHeightValue - markSize.Height / 2)));
                             }
                         };
 
-                        mark(0, (float)(this.ClientSize.Width * (1 - gapValue)));
-                        mark(1, (float)(this.ClientSize.Width * (0 + gapValue)));
+                        mark(1, Sides.Right);
+                        mark(0, Sides.Left);
                     }
                 }
             }
