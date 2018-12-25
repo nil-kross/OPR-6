@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lomtseu.GamesTheory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,13 +14,13 @@ namespace Lomtseu
 {
     public partial class GraphForm : Form
     {
-        private Double[][] strategiesArray;
+        private StrategiesTable strategiesTable;
 
-        public GraphForm(Double[][] strategies)
+        public GraphForm(StrategiesTable strategies)
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
-            this.strategiesArray = strategies;
+            this.strategiesTable = strategies;
 
             this.ResizeLayout();
         }
@@ -43,12 +44,14 @@ namespace Lomtseu
             Double maxValue = 0;
             Double minValue = 0;
 
+            var a = GraphicSolver.Solve(this.strategiesTable);
+
             graphics.SmoothingMode = SmoothingMode.AntiAlias;
             graphics.Clear(Color.White);
-            for (var r = 0; r < this.strategiesArray.Length; r++)
+            for (var r = 0; r < this.strategiesTable.Length; r++)
             {
-                maxValue = Math.Max(maxValue, this.strategiesArray[r].Max());
-                minValue = Math.Min(minValue, this.strategiesArray[r].Min());
+                maxValue = Math.Max(maxValue, this.strategiesTable[r].Max());
+                minValue = Math.Min(minValue, this.strategiesTable[r].Min());
             }
 
             {
@@ -60,10 +63,10 @@ namespace Lomtseu
                 {
                     Pen pen = new Pen(Color.Black, 1);
 
-                    for (var r = 0; r < this.strategiesArray[0].Length; r++)
+                    for (var r = 0; r < this.strategiesTable.Strategies[0].Length; r++)
                     {
-                        var leftValue = this.ClientSize.Height - (this.strategiesArray[0][r] - minValue) * hieghtValue;
-                        var rightValue = this.ClientSize.Height - (this.strategiesArray[1][r] - minValue) * hieghtValue;
+                        var leftValue = this.ClientSize.Height - (this.strategiesTable.Strategies[0][r] - minValue) * hieghtValue;
+                        var rightValue = this.ClientSize.Height - (this.strategiesTable.Strategies[1][r] - minValue) * hieghtValue;
 
                         graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (0 + gapValue)), (Int32)leftValue, (Int32)(this.ClientSize.Width * (1 - gapValue)), (Int32)rightValue);
                     }
@@ -90,7 +93,7 @@ namespace Lomtseu
                         {
                             var number = i + minValue;
 
-                            if (strategiesArray[c].Contains(number))
+                            if (strategiesTable.Strategies[c].Contains(number))
                             {
                                 var markString = number.ToString();
                                 var markFont = new Font("Times New Roman", 14.0f);
@@ -108,7 +111,7 @@ namespace Lomtseu
             }
         }
 
-        private void OnGraphFormResize(object sender, EventArgs e)
+        private void OnGraphFormResize(Object sender, EventArgs e)
         {
             this.ResizeLayout();
         }

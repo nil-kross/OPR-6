@@ -56,14 +56,15 @@ namespace Lomtseu {
         }
 
         public MainForm() {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.mValue = MainForm.defaultMValue;
 
             this.UpdateLayout();
             this.OnGameModeChange(GameModes.MPerTwo);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
-        }
+
+    }
 
         protected void ResizeLayout() {
             var x0 = 7;
@@ -128,7 +129,7 @@ namespace Lomtseu {
             this.UpdateLayout();
         }
 
-        private void OnResize(object sender, EventArgs e) {
+        private void OnResize(Object sender, EventArgs e) {
             this.ResizeLayout();
         }
 
@@ -324,7 +325,7 @@ namespace Lomtseu {
                 this.normalizedArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
             }
 
-            (new GraphForm(this.normalizedArray)).ShowDialog();
+            (new GraphForm(new StrategiesTable(this.normalizedArray, Direction.Max))).ShowDialog();
         }
 
         public Double[][] Normalize(Double[][] array) {
