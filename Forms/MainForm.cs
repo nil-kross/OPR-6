@@ -14,19 +14,19 @@ namespace Lomtseu {
     public partial class MainForm : Form {
         private const Int32 defaultMValue = 5;
 
-        private Boolean         isBuilded = false;
-        private Boolean         isStarted = false;
-        private Boolean         isMChanged = false;
-        private Boolean         isModeChanged = false;
-        private Int32           mValue;
-        private GameModes       gameMode;
-        private GameModes       selectedGameMode;
-        private Table           inputTable;
-        private Table           saddleTable;
-        private Table           paretoTable;
-        private Double[][]      normalizedArray;
-        private Double[][]      strategiesArray;
-        private Double[][]      paretoArray;
+        private Boolean isBuilded = false;
+        private Boolean isStarted = false;
+        private Boolean isMChanged = false;
+        private Boolean isModeChanged = false;
+        private Int32 mValue;
+        private GameModes gameMode;
+        private GameModes selectedGameMode;
+        private Table inputTable;
+        private Table saddleTable;
+        private Table paretoTable;
+        private Double[][] normalizedArray;
+        private Double[][] strategiesArray;
+        private Double[][] paretoArray;
         private StrategiesTable strategiesTable;
 
         protected Int32 M {
@@ -115,11 +115,11 @@ namespace Lomtseu {
 
             this.tabControl.TabPages.Clear();
             if (this.isBuilded) {
-                this.tabControl.TabPages.Add(inputTabPage);
+                this.tabControl.TabPages.Add(this.inputTabPage);
             }
             if (this.isStarted) {
-                this.tabControl.TabPages.Add(saddleTabPage);
-                this.tabControl.TabPages.Add(paretoTabPage);
+                this.tabControl.TabPages.Add(this.saddleTabPage);
+                this.tabControl.TabPages.Add(this.paretoTabPage);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Lomtseu {
             this.isBuilded = true;
             this.M = this.M;
 
-            this.gameMode = selectedGameMode;
+            this.gameMode = this.selectedGameMode;
             if (this.gameMode == GameModes.MPerTwo) {
                 rowsValue = this.M;
                 colsValue = 2;
@@ -311,15 +311,15 @@ namespace Lomtseu {
             this.tabControl.SelectTab(this.saddleTabPage.Name);
         }
 
-        private void OnGraphButtonClick(object sender, EventArgs e) {
+        private void OnGraphButtonClick(Object sender, EventArgs e) {
             // Нормализуем массив стратегий:
             {
                 // TODO: нормализация массива
 
                 // DEBUG
                 this.normalizedArray = new Double[2][];
-                this.normalizedArray[0] = new double[7] { -6, -1, 1, 4, 7, 4, 3 };
-                this.normalizedArray[1] = new double[7] { 7, -2, 6, 3, -2, -5, 7 };
+                this.normalizedArray[0] = new Double[7] { -6, -1, 1, 4, 7, 4, 3 };
+                this.normalizedArray[1] = new Double[7] { 7, -2, 6, 3, -2, -5, 7 };
             }
 
             (new GraphForm(new StrategiesTable(this.normalizedArray, Direction.Max))).ShowDialog();

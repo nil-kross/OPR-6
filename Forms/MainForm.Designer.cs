@@ -206,6 +206,7 @@
         private System.Windows.Forms.Button graphButton;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Button nButton;
+        private System.Windows.Forms.Button buildButton;
     }
 }
 
