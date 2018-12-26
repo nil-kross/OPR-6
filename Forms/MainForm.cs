@@ -14,19 +14,20 @@ namespace Lomtseu {
     public partial class MainForm : Form {
         private const Int32 defaultMValue = 5;
 
-        private Boolean isBuilded = false;
-        private Boolean isStarted = false;
-        private Boolean isMChanged = false;
-        private Boolean isModeChanged = false;
-        private Int32 mValue;
-        private GameModes gameMode;
-        private GameModes selectedGameMode;
-        private Table inputTable;
-        private Table saddleTable;
-        private Table paretoTable;
-        private Double[][] normalizedArray;
-        private Double[][] strategiesArray;
-        private Double[][] paretoArray;
+        private Boolean         isBuilded = false;
+        private Boolean         isStarted = false;
+        private Boolean         isMChanged = false;
+        private Boolean         isModeChanged = false;
+        private Int32           mValue;
+        private GameModes       gameMode;
+        private GameModes       selectedGameMode;
+        private Table           inputTable;
+        private Table           saddleTable;
+        private Table           paretoTable;
+        private Double[][]      normalizedArray;
+        private Double[][]      strategiesArray;
+        private Double[][]      paretoArray;
+        private StrategiesTable strategiesTable;
 
         protected Int32 M {
             get {
@@ -64,7 +65,7 @@ namespace Lomtseu {
             this.OnGameModeChange(GameModes.MPerTwo);
             this.mTextBox.Text = MainForm.defaultMValue.ToString();
 
-    }
+        }
 
         protected void ResizeLayout() {
             var x0 = 7;
@@ -179,10 +180,11 @@ namespace Lomtseu {
 
             array = new Double[rowsValue][];
 
-            {
+            if (this.tabControl.SelectedTab != this.inputTabPage) {
                 this.tabControl.SelectTab(this.inputTabPage.Name);
                 this.grid.Load(this.inputTable);
-
+            }
+            {
                 for (var r = 0; r < rowsValue; r++) {
                     array[r] = new Double[colsValue];
                 }
@@ -212,6 +214,9 @@ namespace Lomtseu {
                 this.strategiesArray = array;
                 this.normalizedArray = this.DeleteNonPareto(this.strategiesArray);
                 this.paretoArray = this.DeleteNonPareto(this.normalizedArray);
+                this.paretoTable = new Table(2, this.paretoArray[0].Length).ForEach(
+                    (cell, row, col) => new TextCell(this.paretoArray[row][col].ToString())
+                );
             }
             this.isStarted = true;
 
@@ -300,14 +305,6 @@ namespace Lomtseu {
                     this.saddleTable = table;
                 }
             }
-            // Парето
-            {
-                for (var r = 0; r < rowsValue; r++) {
-                    for (var c = 0; c < colsValue; c++) {
-                        // TO DO
-                    }
-                }
-            }
 
             this.UpdateLayout();
 
@@ -341,19 +338,25 @@ namespace Lomtseu {
         public Double[][] DeleteNonPareto(Double[][] array) {
             Double[][] paretoArray = null;
 
-            {
-                var lengthValue = array[0].Count();
+            if (array == null) {
+                throw new ArgumentNullException("Double[][] 'array' was null!");
+            } else {
+                var lengthValue = array[0].Length;
                 var isDominatedArray = new Boolean[lengthValue];
 
                 for (var f = 0; f < lengthValue - 1; f++) {
                     for (var s = f + 1; s < lengthValue; s++) {
-                        var isDominated = true;
+                        var dominatesCountValue = 0;
 
                         for (var k = 0; k < 2; k++) {
-                            isDominated = isDominated && (array[f][k] < array[s][k]);
+                            var one = array[k][f];
+                            var other = array[k][s];
+
+                            dominatesCountValue += (one <= other) ? 1 : 0;
                         }
 
-                        isDominatedArray[s] = isDominatedArray[s] && isDominated;
+                        isDominatedArray[f] = isDominatedArray[f] || dominatesCountValue == 2;
+                        isDominatedArray[s] = isDominatedArray[s] || dominatesCountValue == 0;
                     }
                 }
 
