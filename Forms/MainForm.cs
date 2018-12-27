@@ -1,13 +1,8 @@
 ﻿using Lomtseu.GamesTheory;
 using Lomtseu.Tables;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Lomtseu {
@@ -328,14 +323,10 @@ namespace Lomtseu {
         public Matrix Normalize(Double[][] array) {
             Matrix matrix = new Matrix(array);
 
-            if (matrix.RowsCount != 2)
-            {
-                if (matrix.ColsCount == 2)
-                {
+            if (matrix.RowsCount != 2) {
+                if (matrix.ColsCount == 2) {
                     return matrix.Rotate();
-                } 
-                else
-                {
+                } else {
                     throw new Exception("One of matrix dimensions should equals 2!");
                 }
             }
