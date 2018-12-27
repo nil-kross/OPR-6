@@ -42,6 +42,7 @@
             this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.panel.SuspendLayout();
+            this.buildButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // gameModeSwitchButton
