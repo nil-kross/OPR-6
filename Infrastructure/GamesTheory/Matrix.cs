@@ -6,6 +6,10 @@ namespace Lomtseu.GamesTheory {
     public class Span {
         private Double[] array;
 
+        public Double[] Value {
+            get { return this.array; }
+        }
+
         public Span(IEnumerable<Double> items) {
             this.array = new Double[items.Count()];
 
