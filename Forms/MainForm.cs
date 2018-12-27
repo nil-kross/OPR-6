@@ -9,6 +9,7 @@ namespace Lomtseu {
     public partial class MainForm : Form {
         private const Int32 defaultMValue = 5;
 
+        private IArrayFromGridParser arrayFromGridParser = new ArrayFromGridParser();
         private Boolean isBuilded = false;
         private Boolean isStarted = false;
         private Boolean isMChanged = false;
@@ -179,30 +180,7 @@ namespace Lomtseu {
                 this.tabControl.SelectTab(this.inputTabPage.Name);
                 this.grid.Load(this.inputTable);
             }
-            {
-                for (var r = 0; r < rowsValue; r++) {
-                    array[r] = new Double[colsValue];
-                }
-                {
-                    var r = 0;
-
-                    foreach (DataGridViewRow row in this.grid.Rows) {
-                        if (r < this.grid.RowCount - 1) {
-                            var c = 0;
-
-                            if (r < this.grid.Rows.Count - 1) {
-                                foreach (DataGridViewTextBoxCell col in row.Cells) {
-                                    array[r][c] = Double.Parse(col.Value as String);
-
-                                    c++;
-                                }
-                            }
-                        }
-
-                        r++;
-                    }
-                }
-            }
+            array = this.arrayFromGridParser.Parse(this.grid);
             // Сохраняем inputTable
             {
                 this.inputTable = this.grid.Save();

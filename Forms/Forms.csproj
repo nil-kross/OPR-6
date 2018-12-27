@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayFromGridParser.cs" />
     <Compile Include="GraphForm.cs">
       <SubType>Form</SubType>
     </Compile>
