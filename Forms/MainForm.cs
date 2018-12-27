@@ -11,6 +11,7 @@ namespace Lomtseu {
 
         private IArrayFromGridParser arrayFromGridParser = new ArrayFromGridParser();
         private ISaddlePointResolver saddlePointResolver = new SaddlePointResolver();
+        private IParetoPointsResolver paretoPointsResolver = new ParetoPointsResolver();
         private Boolean isBuilded = false;
         private Boolean isStarted = false;
         private Boolean isMChanged = false;
@@ -175,8 +176,6 @@ namespace Lomtseu {
             var rowsValue = this.grid.Rows.Count - 1;
             var colsValue = this.grid.Columns.Count;
 
-            array = new Double[rowsValue][];
-
             if (this.tabControl.SelectedTab != this.inputTabPage) {
                 this.tabControl.SelectTab(this.inputTabPage.Name);
                 this.grid.Load(this.inputTable);
@@ -191,16 +190,19 @@ namespace Lomtseu {
                 this.strategiesArray = array;
                 strategiesMatrix = new Matrix(this.strategiesArray);
                 this.normalizedArray = this.Normalize(this.strategiesArray).ToArray();
-                this.paretoArray = this.DeleteNonPareto(this.normalizedArray);
-                this.paretoTable = new Table(2, this.paretoArray[0].Length).ForEach(
-                    (cell, row, col) => new TextCell(this.paretoArray[row][col].ToString())
-                );
                 // Седловая точка
                 {
                     var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
 
                     this.grid.Load(saddlePointModel.Table);
                     this.saddleTable = saddlePointModel.Table;
+                }
+                // Парето
+                {
+                    var model = this.paretoPointsResolver.Resolve(this.Normalize(this.strategiesArray));
+
+                    this.paretoArray = model.Array;
+                    this.paretoTable = model.Table;
                 }
             }
             this.isStarted = true;
@@ -236,61 +238,6 @@ namespace Lomtseu {
             }
 
             return matrix;
-        }
-
-        public Double[][] DeleteNonPareto(Double[][] array) {
-            Double[][] paretoArray = null;
-
-            if (array == null) {
-                throw new ArgumentNullException("Double[][] 'array' was null!");
-            } else {
-                var lengthValue = array[0].Length;
-                var isDominatedArray = new Boolean[lengthValue];
-
-                for (var f = 0; f < lengthValue - 1; f++) {
-                    for (var s = f + 1; s < lengthValue; s++) {
-                        var dominatesCountValue = 0;
-
-                        for (var k = 0; k < 2; k++) {
-                            var one = array[k][f];
-                            var other = array[k][s];
-
-                            dominatesCountValue += (one <= other) ? 1 : 0;
-                        }
-
-                        isDominatedArray[f] = isDominatedArray[f] || dominatesCountValue == 2;
-                        isDominatedArray[s] = isDominatedArray[s] || dominatesCountValue == 0;
-                    }
-                }
-
-                {
-                    var newLengthValue = 0;
-
-                    for (var p = 0; p < array[0].Length; p++) {
-                        newLengthValue += !isDominatedArray[p] ? 1 : 0;
-                    }
-
-                    paretoArray = new Double[2][];
-                    for (var c = 0; c < 2; c++) {
-                        paretoArray[c] = new Double[newLengthValue];
-                    }
-
-                    {
-                        var i = 0;
-
-                        for (var r = 0; r < array[0].Length; r++) {
-                            if (!isDominatedArray[r]) {
-                                for (var c = 0; c < 2; c++) {
-                                    paretoArray[c][i] = array[c][r];
-                                }
-                                i++;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return paretoArray;
         }
 
         private void OnTabControlSelectedIndexChanged(Object sender, TabControlCancelEventArgs e) {

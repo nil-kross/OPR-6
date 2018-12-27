@@ -14,10 +14,11 @@ namespace Lomtseu.GamesTheory {
             this.array = new Double[items.Count()];
 
             {
-                var c = 0;
+                var i = 0;
 
                 foreach (Double item in items) {
-                    this.array[c] = item;
+                    this.array[i] = item;
+                    i++;
                 }
             }
         }
@@ -131,13 +132,13 @@ namespace Lomtseu.GamesTheory {
             Span cellsSpan = null;
 
             {
-                Double[] cellsArray = new Double[this.colsValue];
+                Double[] array = new Double[this.colsValue];
 
                 for (var c = 0; c < this.colsValue; c++) {
-                    cellsArray[c] = this.array[row][c];
+                    array[c] = this.array[row][c];
                 }
 
-                cellsSpan = new Span(cellsArray);
+                cellsSpan = new Span(array);
             }
 
             return cellsSpan;
@@ -147,13 +148,13 @@ namespace Lomtseu.GamesTheory {
             Span cellsSpan = null;
 
             {
-                Double[] cellsArray = new Double[this.rowsValue];
+                Double[] array = new Double[this.rowsValue];
 
-                for (var c = 0; c < this.colsValue; c++) {
-                    cellsArray[c] = this.array[c][col];
+                for (var r = 0; r < this.colsValue; r++) {
+                    array[r] = this.array[r][col];
                 }
 
-                cellsSpan = new Span(cellsArray);
+                cellsSpan = new Span(array);
             }
 
             return cellsSpan;
