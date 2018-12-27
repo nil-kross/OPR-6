@@ -212,7 +212,7 @@ namespace Lomtseu {
             {
                 this.inputTable = this.grid.Save();
                 this.strategiesArray = array;
-                this.normalizedArray = this.DeleteNonPareto(this.strategiesArray);
+                this.normalizedArray = this.Normalize(this.strategiesArray).ToArray();
                 this.paretoArray = this.DeleteNonPareto(this.normalizedArray);
                 this.paretoTable = new Table(2, this.paretoArray[0].Length).ForEach(
                     (cell, row, col) => new TextCell(this.paretoArray[row][col].ToString())
@@ -325,14 +325,22 @@ namespace Lomtseu {
             (new GraphForm(new StrategiesTable(this.normalizedArray, Direction.Max))).ShowDialog();
         }
 
-        public Double[][] Normalize(Double[][] array) {
-            Double[][] normArray = new Double[2][];
+        public Matrix Normalize(Double[][] array) {
+            Matrix matrix = new Matrix(array);
 
-            if (true) {
-                throw new NotImplementedException();
+            if (matrix.RowsCount != 2)
+            {
+                if (matrix.ColsCount == 2)
+                {
+                    return matrix.Rotate();
+                } 
+                else
+                {
+                    throw new Exception("One of matrix dimensions should equals 2!");
+                }
             }
 
-            return normArray;
+            return matrix;
         }
 
         public Double[][] DeleteNonPareto(Double[][] array) {

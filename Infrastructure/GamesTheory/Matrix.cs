@@ -85,12 +85,59 @@ namespace Lomtseu.GamesTheory
 
         public Matrix(Byte rows, Byte cols) {
             this.rowsValue = rows;
-            this.colsValue = cols;
+            this.colsValue = cols; 
+            this.ForEach((c) => 0.0);
+        }
+        public Matrix(Double[][] array)
+        {
+            this.rowsValue = (Byte)array.Length;
+            this.colsValue = (Byte)array[0].Length;
+
+            for (Byte r = 0; r < this.RowsCount; r++)
+            {
+                for (Byte c = 0; c < this.ColsCount; c++)
+                {
+                    this[r, c] = array[r][c];
+                }
+            }
+        }
+
+        public Matrix ForEach(Func<Double, Byte, Byte, Double> func)
+        {
+            for (Byte r = 0; r < this.RowsCount; r++)
+            {
+                for (Byte c = 0; c < this.ColsCount; c++)
+                {
+                    this[r, c] = func(this[r, c], r, c);
+                }
+            }
+
+            return this;
+        }
+
+        public Matrix ForEach(Func<Double, Double> func)
+        {
+            return this.ForEach((old, r, c) => func(old));
+        }
+
+        public Matrix Rotate()
+        {
+            Matrix matrix = new Matrix(this.ColsCount, this.RowsCount);
+
+            matrix.ForEach((item, row, col) => this[col, row]);
+
+            return matrix;
+        }
+
+        public Double[][] ToArray()
+        {
+            return this.array;
         }
 
         public override String ToString() {
             return String.Format("M {0}x{1}", this.RowsCount, this.ColsCount);
         }
+
         protected Span GetRow(Int32 row)
         {
             Span cellsSpan = null;
