@@ -103,6 +103,13 @@ namespace Lomtseu.Tables {
             return this.ForEach((old, r, c) => func(old));
         }
 
+        public Table Rotate()
+        {
+            Table table = new Table(this.ColsAmount, this.RowsAmount).ForEach((cell, r, c) => this[c, r]);
+
+            return table;
+        }
+
         public override String ToString() {
             return String.Format("{0} x {1}", this.RowsAmount, this.ColsAmount);
         }

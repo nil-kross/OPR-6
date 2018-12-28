@@ -172,7 +172,7 @@ namespace Lomtseu {
         }
 
         private void OnStartButtonClick(Object sender, EventArgs e) {
-            Double[][] array;
+            Double[][] array = null;
             var rowsValue = this.grid.Rows.Count - 1;
             var colsValue = this.grid.Columns.Count;
 
@@ -182,14 +182,16 @@ namespace Lomtseu {
             }
             array = this.arrayFromGridParser.Parse(this.grid);
             
-            {
-                Matrix strategiesMatrix;
+            if (array != null) {
+                Matrix strategiesMatrix = null;
+                Matrix normalizedMatrix = null;
 
                 // Сохраняем inputTable
                 this.inputTable = this.grid.Save();
                 this.strategiesArray = array;
                 strategiesMatrix = new Matrix(this.strategiesArray);
-                this.normalizedArray = this.Normalize(this.strategiesArray).ToArray();
+                normalizedMatrix = this.Normalize(this.strategiesArray);
+                this.normalizedArray = normalizedMatrix.ToArray();
                 // Седловая точка
                 {
                     var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
@@ -199,10 +201,12 @@ namespace Lomtseu {
                 }
                 // Парето
                 {
-                    var model = this.paretoPointsResolver.Resolve(this.Normalize(this.strategiesArray));
+                    var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
 
                     this.paretoArray = model.Array;
-                    this.paretoTable = model.Table;
+                    this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount) 
+                                            ? model.Table.Rotate()
+                                            : model.Table;
                 }
             }
             this.isStarted = true;
