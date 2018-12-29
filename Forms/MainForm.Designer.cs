@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.gameModeSwitchButton = new System.Windows.Forms.Button();
-            this.mTextBox = new System.Windows.Forms.TextBox();
+            this.rowsCountTextBox = new System.Windows.Forms.TextBox();
             this.startButton = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.inputTabPage = new System.Windows.Forms.TabPage();
@@ -38,11 +38,11 @@
             this.grid = new System.Windows.Forms.DataGridView();
             this.graphButton = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
-            this.nButton = new System.Windows.Forms.Button();
+            this.colsCountTextBox = new System.Windows.Forms.TextBox();
+            this.buildButton = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.panel.SuspendLayout();
-            this.buildButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // gameModeSwitchButton
@@ -56,28 +56,17 @@
             this.gameModeSwitchButton.UseVisualStyleBackColor = false;
             this.gameModeSwitchButton.Click += new System.EventHandler(this.OnGameModeSwitchButtonClick);
             // 
-            // mTextBox
+            // rowsCountTextBox
             // 
-            this.mTextBox.BackColor = System.Drawing.Color.Yellow;
-            this.mTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.mTextBox.Location = new System.Drawing.Point(58, 3);
-            this.mTextBox.Name = "mTextBox";
-            this.mTextBox.Size = new System.Drawing.Size(30, 21);
-            this.mTextBox.TabIndex = 2;
-            this.mTextBox.Text = "0";
-            this.mTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.mTextBox.Leave += new System.EventHandler(this.OnMTextBoxLeave);
-            // 
-            // buildButton
-            // 
-            this.buildButton.BackColor = System.Drawing.Color.White;
-            this.buildButton.Location = new System.Drawing.Point(94, 3);
-            this.buildButton.Name = "buildButton";
-            this.buildButton.Size = new System.Drawing.Size(115, 23);
-            this.buildButton.TabIndex = 3;
-            this.buildButton.Text = "Построить таблицу";
-            this.buildButton.UseVisualStyleBackColor = false;
-            this.buildButton.Click += new System.EventHandler(this.OnBuildButtonClick);
+            this.rowsCountTextBox.BackColor = System.Drawing.Color.Yellow;
+            this.rowsCountTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.rowsCountTextBox.Location = new System.Drawing.Point(7, 3);
+            this.rowsCountTextBox.Name = "rowsCountTextBox";
+            this.rowsCountTextBox.Size = new System.Drawing.Size(30, 21);
+            this.rowsCountTextBox.TabIndex = 2;
+            this.rowsCountTextBox.Text = "0";
+            this.rowsCountTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.rowsCountTextBox.Leave += new System.EventHandler(this.OnMTextBoxLeave);
             // 
             // startButton
             // 
@@ -154,8 +143,8 @@
             // panel
             // 
             this.panel.BackColor = System.Drawing.Color.LightCoral;
-            this.panel.Controls.Add(this.nButton);
-            this.panel.Controls.Add(this.mTextBox);
+            this.panel.Controls.Add(this.colsCountTextBox);
+            this.panel.Controls.Add(this.rowsCountTextBox);
             this.panel.Controls.Add(this.graphButton);
             this.panel.Controls.Add(this.tabControl);
             this.panel.Controls.Add(this.gameModeSwitchButton);
@@ -167,14 +156,25 @@
             this.panel.TabIndex = 8;
             this.panel.Click += new System.EventHandler(this.OnMTextBoxLeave);
             // 
-            // nButton
+            // colsCountTextBox
             // 
-            this.nButton.Location = new System.Drawing.Point(7, 3);
-            this.nButton.Name = "nButton";
-            this.nButton.Size = new System.Drawing.Size(30, 23);
-            this.nButton.TabIndex = 8;
-            this.nButton.Text = "2";
-            this.nButton.UseVisualStyleBackColor = true;
+            this.colsCountTextBox.Location = new System.Drawing.Point(58, 4);
+            this.colsCountTextBox.Name = "colsCountTextBox";
+            this.colsCountTextBox.Size = new System.Drawing.Size(30, 20);
+            this.colsCountTextBox.TabIndex = 8;
+            this.colsCountTextBox.Text = "0";
+            this.colsCountTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // buildButton
+            // 
+            this.buildButton.BackColor = System.Drawing.Color.White;
+            this.buildButton.Location = new System.Drawing.Point(94, 3);
+            this.buildButton.Name = "buildButton";
+            this.buildButton.Size = new System.Drawing.Size(115, 23);
+            this.buildButton.TabIndex = 3;
+            this.buildButton.Text = "Построить таблицу";
+            this.buildButton.UseVisualStyleBackColor = false;
+            this.buildButton.Click += new System.EventHandler(this.OnBuildButtonClick);
             // 
             // MainForm
             // 
@@ -197,7 +197,7 @@
 
         #endregion
         private System.Windows.Forms.Button gameModeSwitchButton;
-        private System.Windows.Forms.TextBox mTextBox;
+        private System.Windows.Forms.TextBox rowsCountTextBox;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage saddleTabPage;
@@ -206,8 +206,8 @@
         private System.Windows.Forms.DataGridView grid;
         private System.Windows.Forms.Button graphButton;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.Button nButton;
         private System.Windows.Forms.Button buildButton;
+        private System.Windows.Forms.TextBox colsCountTextBox;
     }
 }
 

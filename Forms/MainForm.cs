@@ -7,16 +7,17 @@ using System.Windows.Forms;
 
 namespace Lomtseu {
     public partial class MainForm : Form {
-        private const Int32 defaultMValue = 5;
+        private static Size defaultSizeValue = new Size(2, 5);
 
         private IArrayFromGridParser arrayFromGridParser = new ArrayFromGridParser();
         private ISaddlePointResolver saddlePointResolver = new SaddlePointResolver();
         private IParetoPointsResolver paretoPointsResolver = new ParetoPointsResolver();
+        private Byte rowsCountValue = 0;
+        private Byte colsCountValue = 0;
         private Boolean isBuilded = false;
         private Boolean isStarted = false;
-        private Boolean isMChanged = false;
+        private Boolean isRowsCountChanged = false;
         private Boolean isModeChanged = false;
-        private Int32 mValue;
         private GameModes gameMode;
         private GameModes selectedGameMode;
         private Table inputTable;
@@ -27,42 +28,64 @@ namespace Lomtseu {
         private Double[][] paretoArray;
         private StrategiesTable strategiesTable;
 
-        protected Int32 M {
-            get {
-                var mValue = -1;
-                var isMValid = false;
+        protected Byte RowsCount {
+            get { return this.rowsCountValue; }
+            set { this.rowsCountValue = value; }
+        }
 
-                if (Int32.TryParse(this.mTextBox.Text, out mValue)) {
-                    if (mValue > 0) {
-                        isMValid = true;
+        protected Byte ColsCount {
+            get { return this.colsCountValue; }
+            set { this.colsCountValue = value; }
+        }
+
+        protected Nullable<Byte> InputRowsCount {
+            get {
+                Byte? rowsCountValue = null;
+
+                {
+                    Byte numberValue;
+
+                    if (Byte.TryParse(this.rowsCountTextBox.Text, out numberValue)) {
+                        rowsCountValue = numberValue;
                     }
                 }
 
-                if (!isMValid) {
-                    this.mTextBox.Text = this.mValue.ToString();
-                    this.isMChanged = false;
-                    mValue = this.M;
-                }
-
-                return mValue;
+                return rowsCountValue;
             }
             set {
-                var newValue = value > 0 ? value : this.mValue;
+                this.rowsCountTextBox.Text = value.ToString();
+            }
+        }
 
-                this.isMChanged = false;
-                this.mValue = newValue;
+        protected Nullable<Byte> InputColsCount {
+            get {
+                Byte? colsCountValue = null;
+
+                {
+                    Byte numberValue;
+
+                    if (Byte.TryParse(this.colsCountTextBox.Text, out numberValue)) {
+                        colsCountValue = numberValue;
+                    }
+                }
+
+                return colsCountValue;
+            }
+            set {
+                this.colsCountTextBox.Text = value.ToString();
             }
         }
 
         public MainForm() {
             this.InitializeComponent();
 
-            this.mValue = MainForm.defaultMValue;
+            this.rowsCountValue = (Byte)MainForm.defaultSizeValue.Height;
+            this.colsCountValue = (Byte)MainForm.defaultSizeValue.Width;
 
             this.UpdateLayout();
             this.OnGameModeChange(GameModes.TwoPerM);
-            this.mTextBox.Text = MainForm.defaultMValue.ToString();
-
+            this.InputRowsCount = this.RowsCount;
+            this.InputColsCount = this.ColsCount;
         }
 
         protected void ResizeLayout() {
@@ -74,8 +97,6 @@ namespace Lomtseu {
             var gridSize = new Size(this.ClientSize.Width, this.ClientSize.Height - gridPoint.Y);
             var tabControlSize = new Size(this.ClientSize.Width, this.tabControl.Height);
             var tabControlPoint = new Point(0, panelSize.Height - tabControlSize.Height);
-            var nButtonPoint = new Point(this.selectedGameMode == GameModes.TwoPerM ? x0 : x1, this.nButton.Location.Y);
-            var mTextBoxPoint = new Point(this.selectedGameMode == GameModes.TwoPerM ? x1 : x0, this.mTextBox.Location.Y);
 
             if (this.panel.Location != panelPoint) {
                 this.panel.Location = panelPoint;
@@ -95,19 +116,13 @@ namespace Lomtseu {
             if (this.tabControl.Location != tabControlPoint) {
                 this.tabControl.Location = tabControlPoint;
             }
-            if (this.nButton.Location != nButtonPoint) {
-                this.nButton.Location = nButtonPoint;
-            }
-            if (this.mTextBox.Location != mTextBoxPoint) {
-                this.mTextBox.Location = mTextBoxPoint;
-            }
         }
 
         protected void UpdateLayout() {
             this.ResizeLayout();
 
-            this.mTextBox.BackColor = this.isMChanged ? Color.Yellow : Color.White;
-            this.buildButton.BackColor = this.isModeChanged || this.isMChanged ? Color.Yellow : Color.White;
+            this.rowsCountTextBox.BackColor = this.isRowsCountChanged ? Color.Yellow : Color.White;
+            this.buildButton.BackColor = this.isModeChanged || this.isRowsCountChanged ? Color.Yellow : Color.White;
             this.startButton.Enabled = this.isBuilded;
             this.graphButton.Enabled = this.isStarted;
 
@@ -133,41 +148,35 @@ namespace Lomtseu {
         }
 
         private void OnGameModeSwitchButtonClick(Object sender, EventArgs e) {
-            this.OnGameModeChange(this.selectedGameMode == GameModes.MPerTwo ? GameModes.TwoPerM : GameModes.MPerTwo);
+            var rowsCountValue = this.InputRowsCount;
+            var colsCountValue = this.InputColsCount;
+
+            this.InputRowsCount = colsCountValue;
+            this.InputColsCount = rowsCountValue;
         }
 
         private void OnMTextBoxLeave(Object sender, EventArgs e) {
-            this.isMChanged = this.mValue != this.M;
+            this.isRowsCountChanged = this.InputRowsCount == this.RowsCount;
 
             this.UpdateLayout();
         }
 
         private void OnBuildButtonClick(Object sender, EventArgs e) {
-            var rowsValue = 0;
-            var colsValue = 0;
+            this.RowsCount = this.InputRowsCount.Value;
+            this.ColsCount = this.InputColsCount.Value;
 
             this.isModeChanged = false;
             this.isBuilded = true;
-            this.M = this.M;
-
-            this.gameMode = this.selectedGameMode;
-            if (this.gameMode == GameModes.MPerTwo) {
-                rowsValue = this.M;
-                colsValue = 2;
-            } else {
-                rowsValue = 2;
-                colsValue = this.M;
-            }
-
+            
             {
-                Table table = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell(r.ToString()));
+                Table table = new Table(this.RowsCount, this.ColsCount)
+                    .ForEach((cell, r, c) => new TextCell(r.ToString()));
 
                 this.grid.Load(table);
                 this.inputTable = table;
             }
 
             this.UpdateLayout();
-
             this.tabControl.SelectTab(this.inputTabPage.Name);
         }
 
