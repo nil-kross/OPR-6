@@ -16,7 +16,6 @@ namespace Lomtseu {
         private Byte colsCountValue = 0;
         private Boolean isBuilded = false;
         private Boolean isStarted = false;
-        private Boolean isRowsCountChanged = false;
         private Boolean isModeChanged = false;
         private GameModes gameMode;
         private GameModes selectedGameMode;
@@ -30,12 +29,18 @@ namespace Lomtseu {
 
         protected Byte RowsCount {
             get { return this.rowsCountValue; }
-            set { this.rowsCountValue = value; }
+            set {
+                this.rowsCountValue = value;
+                this.UpdateLayout();
+            }
         }
 
         protected Byte ColsCount {
             get { return this.colsCountValue; }
-            set { this.colsCountValue = value; }
+            set {
+                this.colsCountValue = value;
+                this.UpdateLayout();
+            }
         }
 
         protected Nullable<Byte> InputRowsCount {
@@ -54,6 +59,7 @@ namespace Lomtseu {
             }
             set {
                 this.rowsCountTextBox.Text = value.ToString();
+                this.UpdateLayout();
             }
         }
 
@@ -73,6 +79,7 @@ namespace Lomtseu {
             }
             set {
                 this.colsCountTextBox.Text = value.ToString();
+                this.UpdateLayout();
             }
         }
 
@@ -121,17 +128,22 @@ namespace Lomtseu {
         protected void UpdateLayout() {
             this.ResizeLayout();
 
-            this.rowsCountTextBox.BackColor = this.isRowsCountChanged ? Color.Yellow : Color.White;
-            this.buildButton.BackColor = this.isModeChanged || this.isRowsCountChanged ? Color.Yellow : Color.White;
+            this.rowsCountTextBox.BackColor = this.RowsCount != this.InputRowsCount ? Color.Yellow : Color.White;
+            this.colsCountTextBox.BackColor = this.ColsCount != this.InputColsCount ? Color.Yellow : Color.White;
+            this.buildButton.BackColor = !(this.RowsCount == this.InputRowsCount && this.ColsCount == this.InputColsCount)
+                                            ? Color.Yellow
+                                            : Color.White;
             this.startButton.Enabled = this.isBuilded;
             this.graphButton.Enabled = this.isStarted;
 
             this.tabControl.TabPages.Clear();
-            if (this.isBuilded) {
+            if (this.isBuilded && this.inputTable != null) {
                 this.tabControl.TabPages.Add(this.inputTabPage);
             }
-            if (this.isStarted) {
+            if (this.isStarted && this.saddleTable != null) {
                 this.tabControl.TabPages.Add(this.saddleTabPage);
+            }
+            if (this.isStarted && this.paretoTable != null) {
                 this.tabControl.TabPages.Add(this.paretoTabPage);
             }
         }
@@ -155,9 +167,11 @@ namespace Lomtseu {
             this.InputColsCount = rowsCountValue;
         }
 
-        private void OnMTextBoxLeave(Object sender, EventArgs e) {
-            this.isRowsCountChanged = this.InputRowsCount == this.RowsCount;
+        private void OnRowsTextBoxLeave(Object sender, EventArgs e) {
+            this.UpdateLayout();
+        }
 
+        private void OnColsTextBoxLeave(Object sender, EventArgs e) {
             this.UpdateLayout();
         }
 
@@ -169,8 +183,9 @@ namespace Lomtseu {
             this.isBuilded = true;
             
             {
+                Random rand = new Random(DateTime.Now.Millisecond);
                 Table table = new Table(this.RowsCount, this.ColsCount)
-                    .ForEach((cell, r, c) => new TextCell(r.ToString()));
+                    .ForEach((cell, r, c) => new TextCell((3 * rand.Next(0, 5)).ToString()));
 
                 this.grid.Load(table);
                 this.inputTable = table;
@@ -195,12 +210,15 @@ namespace Lomtseu {
                 Matrix strategiesMatrix = null;
                 Matrix normalizedMatrix = null;
 
+                this.inputTable = null;
+                this.strategiesArray = null;
+                this.normalizedArray = null;
+
                 // Сохраняем inputTable
                 this.inputTable = this.grid.Save();
                 this.strategiesArray = array;
                 strategiesMatrix = new Matrix(this.strategiesArray);
                 normalizedMatrix = this.Normalize(this.strategiesArray);
-                this.normalizedArray = normalizedMatrix.ToArray();
                 // Седловая точка
                 {
                     var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
@@ -209,8 +227,10 @@ namespace Lomtseu {
                     this.saddleTable = saddlePointModel.Table;
                 }
                 // Парето
-                {
+                if (normalizedMatrix != null) {
                     var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
+
+                    this.normalizedArray = normalizedMatrix.ToArray();
 
                     this.paretoArray = model.Array;
                     this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount) 
@@ -246,7 +266,7 @@ namespace Lomtseu {
                 if (matrix.ColsCount == 2) {
                     return matrix.Rotate();
                 } else {
-                    throw new Exception("One of matrix dimensions should equals 2!");
+                    matrix = null;
                 }
             }
 

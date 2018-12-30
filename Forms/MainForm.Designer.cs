@@ -66,7 +66,7 @@
             this.rowsCountTextBox.TabIndex = 2;
             this.rowsCountTextBox.Text = "0";
             this.rowsCountTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.rowsCountTextBox.Leave += new System.EventHandler(this.OnMTextBoxLeave);
+            this.rowsCountTextBox.Leave += new System.EventHandler(this.OnRowsTextBoxLeave);
             // 
             // startButton
             // 
@@ -154,7 +154,7 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(498, 53);
             this.panel.TabIndex = 8;
-            this.panel.Click += new System.EventHandler(this.OnMTextBoxLeave);
+            this.panel.Click += new System.EventHandler(this.OnRowsTextBoxLeave);
             // 
             // colsCountTextBox
             // 
@@ -164,6 +164,7 @@
             this.colsCountTextBox.TabIndex = 8;
             this.colsCountTextBox.Text = "0";
             this.colsCountTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.colsCountTextBox.Leave += new System.EventHandler(this.OnColsTextBoxLeave);
             // 
             // buildButton
             // 
