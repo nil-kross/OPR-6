@@ -80,7 +80,7 @@ namespace Lomtseu {
                             var isSaddle = (point != null && (r == point.Value.Y && c == point.Value.X));
 
                             table[r, c] = new TextCell(matrix[r, c].ToString()) {
-                                Fore = isSaddle ? Color.DarkGreen : Color.Black,
+                                Back = isSaddle ? Color.GreenYellow : Color.White
                             };
                         }
                     }
@@ -89,7 +89,8 @@ namespace Lomtseu {
                         var textString = String.Format("{0}{1}", minByRowArray[r], isMaxMin ? " *" : "");
 
                         table[r, colsValue] = new TextCell(textString) {
-                            Fore = isMaxMin ? Color.Red : Color.Black
+                            Fore = isMaxMin ? Color.Red : Color.Black,
+                            Back = Color.Gainsboro
                         };
                     }
                     for (var c = 0; c < colsValue; c++) {
@@ -97,7 +98,8 @@ namespace Lomtseu {
                         var textString = String.Format("{0}{1}", maxByColArray[c], isMinMax ? " *" : "");
 
                         table[rowsValue, c] = new TextCell(textString) {
-                            Fore = isMinMax ? Color.Red : Color.Black
+                            Fore = isMinMax ? Color.Red : Color.Black,
+                            Back = Color.Gainsboro
                         };
                     }
 
