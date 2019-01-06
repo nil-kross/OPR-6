@@ -25,5 +25,18 @@ namespace Lomtseu.GamesTheory {
         public override String ToString() {
             return String.Format("y={0:F2}x {2} {1:F2}", this.K, Math.Abs(this.B), (this.B >= 0 ? '+' : '-'));
         }
+
+        public static PointF CrossPoint(LinearEquation first, LinearEquation second) {
+            PointF crossPoint;
+
+            {
+                var x = (second.B - first.B) / (first.K - second.K);
+                var y = first[x];
+
+                crossPoint = new PointF((Single)x, (Single)y);
+            }
+
+            return crossPoint;
+        }
     }
 }

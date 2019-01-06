@@ -1,5 +1,6 @@
 ﻿using Lomtseu.GamesTheory;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -43,7 +44,12 @@ namespace Lomtseu {
             }
 
             {
-                Double gapValue = 20.0 / 100;
+                Double gapValue = 0.15;
+                Action<Pen, Single, Single, Single, Single> drawLine = (pen, x0, y0, x1, y1) => {
+                    Func<Single, Single> calcX = (x) => (Single)(this.ClientSize.Width * (gapValue + x * (1 - 2 * gapValue)));
+
+                    graphics.DrawLine(pen, (Int32)(calcX(x0)), (Int32)y0, (Int32)(calcX(x1)), (Int32)y1);
+                };
                 var deltaValue = Math.Abs(maxValue - minValue);
                 var hieghtValue = this.ClientSize.Height / deltaValue;
 
@@ -55,7 +61,7 @@ namespace Lomtseu {
                         var leftValue = this.ClientSize.Height - (this.strategiesTable.Strategies[0][r] - minValue) * hieghtValue;
                         var rightValue = this.ClientSize.Height - (this.strategiesTable.Strategies[1][r] - minValue) * hieghtValue;
 
-                        graphics.DrawLine(pen, (Int32)(this.ClientSize.Width * (0 + gapValue)), (Int32)leftValue, (Int32)(this.ClientSize.Width * (1 - gapValue)), (Int32)rightValue);
+                        drawLine(pen, 0, (Single)leftValue, 1, (Single)rightValue);
                     }
                 }
                 // Вертикальные линии
@@ -90,6 +96,100 @@ namespace Lomtseu {
 
                         mark(1, Sides.Right);
                         mark(0, Sides.Left);
+                    }
+                }
+                // Строим контур:
+                {
+                    var lengthValue = this.strategiesTable.Strategies[0].Length;
+                    PointF[] array = new PointF[lengthValue];
+                    Pen pen = new Pen(Color.Red, 3);
+
+                    for (var i = 0; i < lengthValue; i++) {
+                        array[i] = new PointF((Single)this.strategiesTable.Strategies[0][i], (Single)this.strategiesTable.Strategies[1][i]);
+                    }
+
+                    {
+                        var usedPointsSet = new HashSet<PointF>();
+                        var sequencePointsList = new List<PointF>();
+                        var currPointValue = array.First((point) => point.X == this.strategiesTable.Strategies[0].Min());
+                        Func<PointF, LinearEquation> getEquationByPoint = (index) => {
+                            return LinearEquation.Create(new PointF(0, (Single)index.X), new PointF(1, (Single)index.Y));
+                        };
+                        var isCanDo = false;
+
+                        sequencePointsList.Add(new PointF(0, currPointValue.X));
+                        do {
+                            var optEquationOrderValue = -1;
+                            var crossPointsList = new List<PointF>();
+                            var currEquationValue = getEquationByPoint(currPointValue);
+                            var minCrossPointValue = new PointF();
+
+                            isCanDo = false;
+                            for (var i = 0; i < lengthValue; i++) {
+                                var equationValue = getEquationByPoint(array[i]);
+                                var crossPointValue = LinearEquation.CrossPoint(equationValue, currEquationValue);
+
+                                crossPointsList.Add(crossPointValue);
+                            }
+                            minCrossPointValue = new PointF(-1, Single.MaxValue);
+                            for (var i = 0; i < crossPointsList.Count; i++) {
+                                var crossPointValue = crossPointsList[i];
+
+                                if (crossPointValue != minCrossPointValue
+                                    && !Double.IsNaN(crossPointValue.X)
+                                    && !Double.IsNaN(crossPointValue.Y)
+                                    && (crossPointValue.X > 0 && crossPointValue.X < 1)
+                                    && crossPointValue.Y < minCrossPointValue.Y
+                                ) {
+                                    if (!usedPointsSet.Contains(array[i])) {
+                                        minCrossPointValue = crossPointValue;
+                                        optEquationOrderValue = i;
+                                    }
+                                }
+                            }
+
+                            if (optEquationOrderValue >= 0) {
+                                usedPointsSet.Add(currPointValue);
+                                currPointValue = array[optEquationOrderValue];
+                                sequencePointsList.Add(crossPointsList[optEquationOrderValue]);
+                                if (currPointValue.Y != this.strategiesTable.Strategies[1].Min()) {
+                                    isCanDo = true;
+                                }
+                            }
+                        } while(isCanDo);
+                        sequencePointsList.Add(new PointF(1, currPointValue.Y));
+
+                        for (var i = 1; i < sequencePointsList.Count; i++) {
+                            var prevValue = sequencePointsList[i - 1];
+                            var nextValue = sequencePointsList[i + 0];
+                            var leftValue = (Single)(this.ClientSize.Height - (prevValue.Y - minValue) * hieghtValue);
+                            var rightValue = (Single)(this.ClientSize.Height - (nextValue.Y - minValue) * hieghtValue);
+
+                            drawLine(pen, prevValue.X, leftValue, nextValue.X, rightValue);
+                        }
+
+                        {
+                            var pointRadiusValue = 11.5f;
+                            var brush = new SolidBrush(Color.Red);
+                            var maxPointValue = sequencePointsList[0];
+                            RectangleF pointRectangleValue;
+
+                            for (var i = 0; i < sequencePointsList.Count; i++) {
+                                var pointValue = sequencePointsList[i];
+
+                                if (pointValue.Y > maxPointValue.Y) {
+                                    maxPointValue = pointValue;
+                                }
+                            }
+
+                            {
+                                var x = (Int32)(this.ClientSize.Width * (gapValue + maxPointValue.X * (1 - 2 * gapValue)) - pointRadiusValue);
+                                var y = (Single)(this.ClientSize.Height - (maxPointValue.Y - minValue) * hieghtValue - pointRadiusValue);
+                                pointRectangleValue = new RectangleF(x, y, pointRadiusValue * 2, pointRadiusValue * 2);
+                            }
+
+                            graphics.FillEllipse(brush, pointRectangleValue);
+                        }
                     }
                 }
             }
