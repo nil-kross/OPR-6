@@ -1,6 +1,7 @@
 ﻿using Lomtseu.GamesTheory;
 using Lomtseu.Tables;
 using System;
+using System.Drawing;
 
 namespace Lomtseu {
     public class ParetoPointsModel {
@@ -18,9 +19,9 @@ namespace Lomtseu {
             Double[][] paretoArray = null;
 
             if (matrix == null) {
-                throw new ArgumentNullException("Double[][] 'array' was null!");
+                throw new ArgumentNullException();
             } else {
-                var lengthValue = matrix.RowsCount; // TO DO
+                var lengthValue = matrix.ColsCount;
                 var isDominatedArray = new Boolean[lengthValue];
 
                 for (Byte f = 0; f < lengthValue - 1; f++) {
@@ -42,7 +43,7 @@ namespace Lomtseu {
                 {
                     var newLengthValue = 0;
 
-                    for (var p = 0; p < matrix.RowsCount; p++) { // TO DO
+                    for (var p = 0; p < lengthValue; p++) {
                         newLengthValue += !isDominatedArray[p] ? 1 : 0;
                     }
 
@@ -54,7 +55,7 @@ namespace Lomtseu {
                     {
                         var i = 0;
 
-                        for (Byte r = 0; r < matrix.RowsCount; r++) {
+                        for (Byte r = 0; r < lengthValue; r++) {
                             if (!isDominatedArray[r]) {
                                 for (Byte c = 0; c < 2; c++) {
                                     paretoArray[c][i] = matrix[c, r];
@@ -66,8 +67,10 @@ namespace Lomtseu {
                 }
 
                 model.Array = paretoArray;
-                model.Table = new Table(2, paretoArray[0].Length).ForEach(
-                    (cell, row, col) => new TextCell(paretoArray[row][col].ToString())
+                model.Table = new Table(2, lengthValue).ForEach(
+                    (cell, row, col) => new TextCell(matrix[(Byte)row, (Byte)col].ToString()) {
+                        Back = isDominatedArray[col] ? Color.Gainsboro : Color.White
+                    }
                 );
             }
 

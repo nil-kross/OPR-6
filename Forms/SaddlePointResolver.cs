@@ -19,7 +19,6 @@ namespace Lomtseu {
             var model = new SaddlePointModel() { IsFounded = false };
 
             if (matrix != null) {
-                Table saddleTable = null;
                 var rowsValue = matrix.RowsCount;
                 var colsValue = matrix.ColsCount;
                 Point? point = null;
@@ -107,7 +106,7 @@ namespace Lomtseu {
                     model.Table = table;
                 }
             } else {
-                throw new ArgumentNullException("Matrix 'matrix' was null!");
+                throw new ArgumentNullException();
             }
 
             return model;

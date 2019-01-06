@@ -39,7 +39,7 @@ namespace Lomtseu {
                     }
                 }
             } else {
-                throw new ArgumentNullException("DataGridView 'grid' was null!");
+                throw new ArgumentNullException();
             }
 
             return array;

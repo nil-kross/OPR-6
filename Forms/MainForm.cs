@@ -185,7 +185,7 @@ namespace Lomtseu {
             {
                 Random rand = new Random(DateTime.Now.Millisecond);
                 Table table = new Table(this.RowsCount, this.ColsCount)
-                    .ForEach((cell, r, c) => new TextCell((3 * rand.Next(0, 5)).ToString()));
+                    .ForEach((cell, r, c) => new TextCell((3 * rand.Next(0, 7)).ToString()));
 
                 this.grid.Load(table);
                 this.inputTable = table;
