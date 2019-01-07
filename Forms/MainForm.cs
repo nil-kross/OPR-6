@@ -219,6 +219,11 @@ namespace Lomtseu {
                 this.strategiesArray = array;
                 strategiesMatrix = new Matrix(this.strategiesArray);
                 normalizedMatrix = this.Normalize(this.strategiesArray);
+                this.normalizedArray = normalizedMatrix.ToArray();
+                this.strategiesTable = new StrategiesTable(
+                    this.normalizedArray,
+                    (normalizedMatrix.RowsCount == strategiesMatrix.RowsCount) ? Contour.Bottom : Contour.Upper
+                );
                 // Седловая точка
                 {
                     var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
@@ -229,8 +234,6 @@ namespace Lomtseu {
                 // Парето
                 if (normalizedMatrix != null) {
                     var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
-
-                    this.normalizedArray = normalizedMatrix.ToArray();
 
                     this.paretoArray = model.Array;
                     this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount) 
@@ -246,17 +249,18 @@ namespace Lomtseu {
         }
 
         private void OnGraphButtonClick(Object sender, EventArgs e) {
-            // Нормализуем массив стратегий:
-            {
-                // TODO: нормализация массива
+            if (false) { // DEBUG
+                Double[][] normalizedArray;
 
-                // DEBUG
-                this.normalizedArray = new Double[2][];
-                this.normalizedArray[0] = new Double[7] { -6, -1, 1, 4, 7, 4, 3 };
-                this.normalizedArray[1] = new Double[7] { 7, -2, 6, 3, -2, -5, 7 };
+                normalizedArray = new Double[2][];
+                normalizedArray[0] = new Double[7] { -6, -1, 1, 4, 7, 4, 3 };
+                normalizedArray[1] = new Double[7] { 7, -2, 6, 3, -2, -5, 7 };
+
+                this.strategiesTable = new StrategiesTable(normalizedArray, Contour.Upper);
             }
-
-            (new GraphForm(new StrategiesTable(this.normalizedArray, Direction.Max))).ShowDialog();
+            if (this.normalizedArray != null) {
+                new GraphForm(this.strategiesTable).ShowDialog();
+            }
         }
 
         public Matrix Normalize(Double[][] array) {

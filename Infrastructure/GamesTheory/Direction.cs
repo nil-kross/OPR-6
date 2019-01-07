@@ -1,6 +1,6 @@
 ﻿namespace Lomtseu.GamesTheory {
-    public enum Direction {
-        Max = 0,
-        Min = 0
+    public enum Contour {
+        Bottom = 0,
+        Upper = 1
     }
 }

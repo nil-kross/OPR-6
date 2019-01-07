@@ -6,34 +6,34 @@ using System.Threading.Tasks;
 
 namespace Lomtseu.GamesTheory {
     public class StrategiesTable {
-        private Double[][] array;
-        private Direction direction;
+        private Double[][] arrayValue;
+        private Contour contourValue;
 
         public Double[][] Strategies {
-            get { return this.array; }
+            get { return this.arrayValue; }
         }
-        public Direction Direction {
-            get { return this.direction; }
+        public Contour Contour {
+            get { return this.contourValue; }
         }
         public Int32 Length {
-            get { return this.array[0].Length; }
+            get { return this.arrayValue[0].Length; }
         }
         public Double[] this[Int32 colIndex] {
             get {
-                var colsValue = this.array.GetUpperBound(0) + 1 - this.array.GetLowerBound(0);
+                var colsValue = this.arrayValue.GetUpperBound(0) + 1 - this.arrayValue.GetLowerBound(0);
                 var rowArray = new Double[colsValue];
 
                 for (var i = 0; i < colsValue; i++) {
-                    rowArray[i] = this.array[i][colIndex];
+                    rowArray[i] = this.arrayValue[i][colIndex];
                 }
 
                 return rowArray;
             }
         }
 
-        public StrategiesTable(Double[][] array, Direction direction) {
-            this.array = array;
-            this.direction = direction;
+        public StrategiesTable(Double[][] array, Contour direction) {
+            this.arrayValue = array;
+            this.contourValue = direction;
         }
 
     }

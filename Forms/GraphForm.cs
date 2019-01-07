@@ -7,6 +7,20 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace Lomtseu {
+    public class Comparator {
+        public static Boolean IsBetter(Double first, Double second, Contour contour) {
+            Boolean isBetter = true;
+
+            if (contour == Contour.Bottom) {
+                isBetter = first > second;
+            } else {
+                isBetter = first < second;
+            }
+
+            return isBetter;
+        }
+    }
+
     public partial class GraphForm : Form {
         private StrategiesTable strategiesTable;
 
@@ -110,12 +124,28 @@ namespace Lomtseu {
 
                     {
                         var usedPointsSet = new HashSet<PointF>();
+                        var candidatePointsList = new List<PointF>();
                         var sequencePointsList = new List<PointF>();
-                        var currPointValue = array.First((point) => point.X == this.strategiesTable.Strategies[0].Min());
+                        var isCanDo = false;
+                        PointF currPointValue;
                         Func<PointF, LinearEquation> getEquationByPoint = (index) => {
                             return LinearEquation.Create(new PointF(0, (Single)index.X), new PointF(1, (Single)index.Y));
                         };
-                        var isCanDo = false;
+
+                        {
+                            var cornerLeftPoints = array.Where((point) => point.X == (this.strategiesTable.Contour == Contour.Bottom
+                                                                                        ? this.strategiesTable.Strategies[0].Min()
+                                                                                        : this.strategiesTable.Strategies[0].Max()));
+
+                            currPointValue = cornerLeftPoints.First();
+                            for (var i = 0; i < cornerLeftPoints.Count(); i++) {
+                                var pointValue = cornerLeftPoints.ElementAt(i);
+
+                                if (Comparator.IsBetter(pointValue.Y, currPointValue.Y, this.strategiesTable.Contour == Contour.Bottom ? Contour.Upper : Contour.Bottom)) {
+                                    currPointValue = pointValue;
+                                }
+                            }
+                        }
 
                         sequencePointsList.Add(new PointF(0, currPointValue.X));
                         do {
@@ -131,7 +161,7 @@ namespace Lomtseu {
 
                                 crossPointsList.Add(crossPointValue);
                             }
-                            minCrossPointValue = new PointF(-1, Single.MaxValue);
+                            minCrossPointValue = new PointF(-1, this.strategiesTable.Contour == Contour.Bottom ? Single.MaxValue : Single.MinValue);
                             for (var i = 0; i < crossPointsList.Count; i++) {
                                 var crossPointValue = crossPointsList[i];
 
@@ -139,7 +169,7 @@ namespace Lomtseu {
                                     && !Double.IsNaN(crossPointValue.X)
                                     && !Double.IsNaN(crossPointValue.Y)
                                     && (crossPointValue.X > 0 && crossPointValue.X < 1)
-                                    && crossPointValue.Y < minCrossPointValue.Y
+                                    && Comparator.IsBetter(minCrossPointValue.Y, crossPointValue.Y, this.strategiesTable.Contour)
                                 ) {
                                     if (!usedPointsSet.Contains(array[i])) {
                                         minCrossPointValue = crossPointValue;
@@ -151,8 +181,12 @@ namespace Lomtseu {
                             if (optEquationOrderValue >= 0) {
                                 usedPointsSet.Add(currPointValue);
                                 currPointValue = array[optEquationOrderValue];
+                                candidatePointsList.Add(crossPointsList[optEquationOrderValue]);
                                 sequencePointsList.Add(crossPointsList[optEquationOrderValue]);
-                                if (currPointValue.Y != this.strategiesTable.Strategies[1].Min()) {
+                                if (currPointValue.Y != (this.strategiesTable.Contour == Contour.Bottom
+                                                            ? this.strategiesTable.Strategies[1].Min()
+                                                            : this.strategiesTable.Strategies[1].Max())
+                                ) {
                                     isCanDo = true;
                                 }
                             }
@@ -168,16 +202,17 @@ namespace Lomtseu {
                             drawLine(pen, prevValue.X, leftValue, nextValue.X, rightValue);
                         }
 
-                        {
+                        if (candidatePointsList.Count > 0) {
                             var pointRadiusValue = 11.5f;
                             var brush = new SolidBrush(Color.Red);
-                            var maxPointValue = sequencePointsList[0];
+                            var maxPointValue = candidatePointsList[0];
                             RectangleF pointRectangleValue;
 
-                            for (var i = 0; i < sequencePointsList.Count; i++) {
-                                var pointValue = sequencePointsList[i];
+                            for (var i = 0; i < candidatePointsList.Count; i++) {
+                                var pointValue = candidatePointsList[i];
 
-                                if (pointValue.Y > maxPointValue.Y) {
+                                if (Comparator.IsBetter(pointValue.Y, maxPointValue.Y, this.strategiesTable.Contour)
+                                ) {
                                     maxPointValue = pointValue;
                                 }
                             }
