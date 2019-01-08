@@ -116,12 +116,6 @@ namespace Lomtseu {
                 this.inputTable = this.grid.Save();
                 this.strategiesArray = array;
                 strategiesMatrix = new Matrix(this.strategiesArray);
-                normalizedMatrix = this.Normalize(this.strategiesArray);
-                this.normalizedArray = normalizedMatrix.ToArray();
-                this.strategiesTable = new StrategiesTable(
-                    this.normalizedArray,
-                    (normalizedMatrix.RowsCount == strategiesMatrix.RowsCount) ? Contour.Bottom : Contour.Upper
-                );
                 // Седловая точка
                 {
                     var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
@@ -132,24 +126,38 @@ namespace Lomtseu {
                     this.saddleTable = saddlePointModel.Table;
                 }
                 // Парето
-                if (normalizedMatrix != null) {
-                    var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
+                if (strategiesMatrix != null) {
+                    var model = this.paretoPointsResolver.Resolve(strategiesMatrix);
 
                     this.paretoArray = model.Array;
-                    this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount)
-                                            ? model.Table.Rotate()
-                                            : model.Table;
+                    this.paretoTable = model.Table;
                 }
                 // Чистая стратегия и её цена
-                {
+                if (this.paretoArray != null) {
                     var model = this.clearCostResolver.Solve(new Matrix(this.paretoArray));
 
                     this.clearCostTable = model.Table;
+                }
+                // Графическое решение
+                if (this.paretoArray != null) {
+                    normalizedMatrix = this.Normalize(this.paretoArray);
+                    if (normalizedMatrix != null) {
+                        this.normalizedArray = normalizedMatrix.RowsCount == 2 && normalizedMatrix.ColsCount == 2
+                            ? strategiesMatrix.RowsCount == 2 ? normalizedMatrix.ToArray() : normalizedMatrix.Rotate().ToArray()
+                            : normalizedMatrix.RowsCount == 2 ? normalizedMatrix.ToArray() : normalizedMatrix.Rotate().ToArray();
+                        this.strategiesTable = new StrategiesTable(
+                            this.normalizedArray,
+                            normalizedMatrix.RowsCount == 2 && normalizedMatrix.ColsCount == 2
+                                ? strategiesMatrix.RowsCount == 2 ? Contour.Bottom : Contour.Upper
+                                : normalizedMatrix.RowsCount == 2 ? Contour.Bottom : Contour.Upper
+                        );
+                    }
                 }
             }
             this.isStarted = true;
 
             this.UpdateLayout();
+            this.tabControl.SelectTab(this.saddleTabPage.Name);
         }
 
         protected void ResizeLayout() {
@@ -230,6 +238,14 @@ namespace Lomtseu {
             this.RowsCount = this.InputRowsCount.Value;
             this.ColsCount = this.InputColsCount.Value;
 
+            this.inputTable = null;
+            this.saddleTable = null;
+            this.paretoTable = null;
+            this.clearCostTable = null;
+            this.normalizedArray = null;
+            this.strategiesArray = null;
+            this.paretoArray = null;
+            this.strategiesTable = null;
             this.isBuilded = true;
             
             {
@@ -259,7 +275,7 @@ namespace Lomtseu {
 
                 this.strategiesTable = new StrategiesTable(normalizedArray, Contour.Upper);
             }
-            if (this.normalizedArray != null) {
+            if (this.strategiesTable != null) {
                 new GraphForm(this.strategiesTable).ShowDialog();
             }
         }

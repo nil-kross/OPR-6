@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamesTheory\Direction.cs" />
+    <Compile Include="GamesTheory\Contour.cs" />
     <Compile Include="GamesTheory\Game.cs" />
     <Compile Include="GamesTheory\GameModes.cs" />
     <Compile Include="GamesTheory\GraphicSolver.cs" />
