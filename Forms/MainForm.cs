@@ -1,8 +1,8 @@
 ﻿using Lomtseu.GamesTheory;
+using Lomtseu.Modules;
 using Lomtseu.Tables;
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Lomtseu {
@@ -12,16 +12,15 @@ namespace Lomtseu {
         private IArrayFromGridParser arrayFromGridParser = new ArrayFromGridParser();
         private ISaddlePointResolver saddlePointResolver = new SaddlePointResolver();
         private IParetoPointsResolver paretoPointsResolver = new ParetoPointsResolver();
+        private IClearCostResolver clearCostResolver = new ClearCostResolver();
         private Byte rowsCountValue = 0;
         private Byte colsCountValue = 0;
         private Boolean isBuilded = false;
         private Boolean isStarted = false;
-        private Boolean isModeChanged = false;
-        private GameModes gameMode;
-        private GameModes selectedGameMode;
         private Table inputTable;
         private Table saddleTable;
         private Table paretoTable;
+        private Table clearCostTable;
         private Double[][] normalizedArray;
         private Double[][] strategiesArray;
         private Double[][] paretoArray;
@@ -90,14 +89,70 @@ namespace Lomtseu {
             this.colsCountValue = (Byte)MainForm.defaultSizeValue.Width;
 
             this.UpdateLayout();
-            this.OnGameModeChange(GameModes.TwoPerM);
             this.InputRowsCount = this.RowsCount;
             this.InputColsCount = this.ColsCount;
         }
 
+        public void Calculate(Boolean isTabTransferOn = false) {
+            Double[][] array = null;
+            var rowsValue = this.grid.Rows.Count - 1;
+            var colsValue = this.grid.Columns.Count;
+
+            if (this.tabControl.SelectedTab != this.inputTabPage) {
+                this.tabControl.SelectTab(this.inputTabPage.Name);
+                this.grid.Load(this.inputTable);
+            }
+            array = this.arrayFromGridParser.Parse(this.grid);
+
+            if (array != null) {
+                Matrix strategiesMatrix = null;
+                Matrix normalizedMatrix = null;
+
+                this.inputTable = null;
+                this.strategiesArray = null;
+                this.normalizedArray = null;
+
+                // Сохраняем inputTable
+                this.inputTable = this.grid.Save();
+                this.strategiesArray = array;
+                strategiesMatrix = new Matrix(this.strategiesArray);
+                normalizedMatrix = this.Normalize(this.strategiesArray);
+                this.normalizedArray = normalizedMatrix.ToArray();
+                this.strategiesTable = new StrategiesTable(
+                    this.normalizedArray,
+                    (normalizedMatrix.RowsCount == strategiesMatrix.RowsCount) ? Contour.Bottom : Contour.Upper
+                );
+                // Седловая точка
+                {
+                    var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
+
+                    if (isTabTransferOn) {
+                        this.grid.Load(saddlePointModel.Table);
+                    }
+                    this.saddleTable = saddlePointModel.Table;
+                }
+                // Парето
+                if (normalizedMatrix != null) {
+                    var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
+
+                    this.paretoArray = model.Array;
+                    this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount)
+                                            ? model.Table.Rotate()
+                                            : model.Table;
+                }
+                // Чистая стратегия и её цена
+                {
+                    var model = this.clearCostResolver.Solve(new Matrix(this.paretoArray));
+
+                    this.clearCostTable = model.Table;
+                }
+            }
+            this.isStarted = true;
+
+            this.UpdateLayout();
+        }
+
         protected void ResizeLayout() {
-            var x0 = 7;
-            var x1 = 58;
             var panelPoint = new Point(0, 0);
             var panelSize = new Size(this.ClientSize.Width, this.panel.Height);
             var gridPoint = new Point(0, panelPoint.Y + panelSize.Height);
@@ -146,13 +201,9 @@ namespace Lomtseu {
             if (this.isStarted && this.paretoTable != null) {
                 this.tabControl.TabPages.Add(this.paretoTabPage);
             }
-        }
-
-        private void OnGameModeChange(GameModes gameMode) {
-            this.isModeChanged = this.gameMode != gameMode;
-            this.selectedGameMode = gameMode;
-
-            this.UpdateLayout();
+            if (this.isStarted && this.clearCostTable != null) {
+                this.tabControl.TabPages.Add(this.clearCostTabPage);
+            }
         }
 
         private void OnResize(Object sender, EventArgs e) {
@@ -179,13 +230,12 @@ namespace Lomtseu {
             this.RowsCount = this.InputRowsCount.Value;
             this.ColsCount = this.InputColsCount.Value;
 
-            this.isModeChanged = false;
             this.isBuilded = true;
             
             {
                 Random rand = new Random(DateTime.Now.Millisecond);
                 Table table = new Table(this.RowsCount, this.ColsCount)
-                    .ForEach((cell, r, c) => new TextCell((3 * rand.Next(0, 7)).ToString()));
+                    .ForEach((cell, r, c) => new TextCell((rand.Next(0, 20)).ToString()));
 
                 this.grid.Load(table);
                 this.inputTable = table;
@@ -196,56 +246,7 @@ namespace Lomtseu {
         }
 
         private void OnStartButtonClick(Object sender, EventArgs e) {
-            Double[][] array = null;
-            var rowsValue = this.grid.Rows.Count - 1;
-            var colsValue = this.grid.Columns.Count;
-
-            if (this.tabControl.SelectedTab != this.inputTabPage) {
-                this.tabControl.SelectTab(this.inputTabPage.Name);
-                this.grid.Load(this.inputTable);
-            }
-            array = this.arrayFromGridParser.Parse(this.grid);
-            
-            if (array != null) {
-                Matrix strategiesMatrix = null;
-                Matrix normalizedMatrix = null;
-
-                this.inputTable = null;
-                this.strategiesArray = null;
-                this.normalizedArray = null;
-
-                // Сохраняем inputTable
-                this.inputTable = this.grid.Save();
-                this.strategiesArray = array;
-                strategiesMatrix = new Matrix(this.strategiesArray);
-                normalizedMatrix = this.Normalize(this.strategiesArray);
-                this.normalizedArray = normalizedMatrix.ToArray();
-                this.strategiesTable = new StrategiesTable(
-                    this.normalizedArray,
-                    (normalizedMatrix.RowsCount == strategiesMatrix.RowsCount) ? Contour.Bottom : Contour.Upper
-                );
-                // Седловая точка
-                {
-                    var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
-
-                    this.grid.Load(saddlePointModel.Table);
-                    this.saddleTable = saddlePointModel.Table;
-                }
-                // Парето
-                if (normalizedMatrix != null) {
-                    var model = this.paretoPointsResolver.Resolve(normalizedMatrix);
-
-                    this.paretoArray = model.Array;
-                    this.paretoTable = !(strategiesMatrix.RowsCount == normalizedMatrix.RowsCount && strategiesMatrix.ColsCount == normalizedMatrix.ColsCount) 
-                                            ? model.Table.Rotate()
-                                            : model.Table;
-                }
-            }
-            this.isStarted = true;
-
-            this.UpdateLayout();
-
-            this.tabControl.SelectTab(this.saddleTabPage.Name);
+            this.Calculate(true);
         }
 
         private void OnGraphButtonClick(Object sender, EventArgs e) {
@@ -288,6 +289,11 @@ namespace Lomtseu {
             if (this.tabControl.SelectedTab == this.paretoTabPage) {
                 this.grid.Load(this.paretoTable);
             }
+            if (this.tabControl.SelectedTab == this.clearCostTabPage) {
+                this.grid.Load(this.clearCostTable);
+            }
         }
+
+        private void OnGridCellLeave(Object sender, DataGridViewCellEventArgs e) {}
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 namespace Lomtseu {
+
     public class Comparator {
         public static Boolean IsBetter(Double first, Double second, Contour contour) {
             Boolean isBetter = true;
@@ -22,6 +23,7 @@ namespace Lomtseu {
     }
 
     public partial class GraphForm : Form {
+        private IGraphicResolver graphicResolver = new GraphicSolver();
         private StrategiesTable strategiesTable;
 
         public GraphForm(StrategiesTable strategies) {
@@ -47,9 +49,8 @@ namespace Lomtseu {
             Graphics graphics = this.pictureBox.CreateGraphics();
             Double maxValue = 0;
             Double minValue = 0;
-            IGraphcisSolver graphicSolver = new GraphicSolver();
 
-            var solutionModel = graphicSolver.Solve(this.ClientSize, graphics, this.strategiesTable);
+            var solutionModel = this.graphicResolver.Solve(this.ClientSize, graphics, this.strategiesTable);
         }
 
         private void OnGraphFormResize(Object sender, EventArgs e) {

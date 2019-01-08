@@ -35,6 +35,7 @@
             this.inputTabPage = new System.Windows.Forms.TabPage();
             this.saddleTabPage = new System.Windows.Forms.TabPage();
             this.paretoTabPage = new System.Windows.Forms.TabPage();
+            this.clearCostTabPage = new System.Windows.Forms.TabPage();
             this.grid = new System.Windows.Forms.DataGridView();
             this.graphButton = new System.Windows.Forms.Button();
             this.panel = new System.Windows.Forms.Panel();
@@ -85,10 +86,11 @@
             this.tabControl.Controls.Add(this.inputTabPage);
             this.tabControl.Controls.Add(this.saddleTabPage);
             this.tabControl.Controls.Add(this.paretoTabPage);
+            this.tabControl.Controls.Add(this.clearCostTabPage);
             this.tabControl.Location = new System.Drawing.Point(3, 32);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(294, 20);
+            this.tabControl.Size = new System.Drawing.Size(528, 20);
             this.tabControl.TabIndex = 5;
             this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.OnTabControlSelectedIndexChanged);
             // 
@@ -97,7 +99,7 @@
             this.inputTabPage.Location = new System.Drawing.Point(4, 22);
             this.inputTabPage.Name = "inputTabPage";
             this.inputTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.inputTabPage.Size = new System.Drawing.Size(286, 0);
+            this.inputTabPage.Size = new System.Drawing.Size(520, 0);
             this.inputTabPage.TabIndex = 0;
             this.inputTabPage.Text = "Исходные данные";
             this.inputTabPage.UseVisualStyleBackColor = true;
@@ -107,7 +109,7 @@
             this.saddleTabPage.Location = new System.Drawing.Point(4, 22);
             this.saddleTabPage.Name = "saddleTabPage";
             this.saddleTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.saddleTabPage.Size = new System.Drawing.Size(286, 0);
+            this.saddleTabPage.Size = new System.Drawing.Size(520, 0);
             this.saddleTabPage.TabIndex = 1;
             this.saddleTabPage.Text = "Седловая точка";
             this.saddleTabPage.UseVisualStyleBackColor = true;
@@ -116,10 +118,20 @@
             // 
             this.paretoTabPage.Location = new System.Drawing.Point(4, 22);
             this.paretoTabPage.Name = "paretoTabPage";
-            this.paretoTabPage.Size = new System.Drawing.Size(286, 0);
+            this.paretoTabPage.Size = new System.Drawing.Size(520, 0);
             this.paretoTabPage.TabIndex = 2;
             this.paretoTabPage.Text = "Парето";
             this.paretoTabPage.UseVisualStyleBackColor = true;
+            // 
+            // clearCostTabPage
+            // 
+            this.clearCostTabPage.Location = new System.Drawing.Point(4, 22);
+            this.clearCostTabPage.Name = "clearCostTabPage";
+            this.clearCostTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.clearCostTabPage.Size = new System.Drawing.Size(520, 0);
+            this.clearCostTabPage.TabIndex = 3;
+            this.clearCostTabPage.Text = "Чистая стратегия";
+            this.clearCostTabPage.UseVisualStyleBackColor = true;
             // 
             // grid
             // 
@@ -128,6 +140,7 @@
             this.grid.Name = "grid";
             this.grid.Size = new System.Drawing.Size(286, 194);
             this.grid.TabIndex = 6;
+            this.grid.CellLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnGridCellLeave);
             // 
             // graphButton
             // 
@@ -209,6 +222,7 @@
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.Button buildButton;
         private System.Windows.Forms.TextBox colsCountTextBox;
+        private System.Windows.Forms.TabPage clearCostTabPage;
     }
 }
 

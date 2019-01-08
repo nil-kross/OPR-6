@@ -20,6 +20,8 @@ namespace Lomtseu.Tables {
                 };
                 var col = new DataGridViewColumn(cell);
 
+                col.MinimumWidth = 50;
+                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 grid.Columns.Add(col);
             }
 
@@ -32,7 +34,9 @@ namespace Lomtseu.Tables {
                         Value = tableCell.Value,
                         Style = new DataGridViewCellStyle() {
                             ForeColor = tableCell.Fore,
-                            BackColor = tableCell.Back
+                            BackColor = tableCell.Back,
+                            WrapMode = DataGridViewTriState.False,
+                            Alignment = DataGridViewContentAlignment.MiddleRight
                         }
                     };
 

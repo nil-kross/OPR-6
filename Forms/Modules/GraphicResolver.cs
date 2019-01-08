@@ -10,11 +10,11 @@ namespace Lomtseu {
         //
     }
 
-    public interface IGraphcisSolver {
+    public interface IGraphicResolver {
         GraphicSolutionModel Solve(Size clientSize, Graphics graphics, StrategiesTable strategiesTable);
     }
 
-    public class GraphicSolver : IGraphcisSolver {
+    public class GraphicSolver : IGraphicResolver {
         public GraphicSolutionModel Solve(Size clientSize, Graphics graphics, StrategiesTable strategiesTable) {
             Double maxValue = 0;
             Double minValue = 0;
