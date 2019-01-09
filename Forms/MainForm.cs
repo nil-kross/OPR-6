@@ -1,139 +1,315 @@
 ﻿using Lomtseu.GamesTheory;
+using Lomtseu.Modules;
 using Lomtseu.Tables;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lomtseu
-{
-    public partial class MainForm : Form
-    {
-        private const Int32 defaultMValue = 5;
+namespace Lomtseu {
+    public partial class MainForm : Form {
+        private static Size defaultSizeValue = new Size(2, 5);
 
-        private Boolean isMChanged = false;
-        private Int32 mValue;
-        private GameModes gameMode;
+        private IArrayFromGridParser arrayFromGridParser = new ArrayFromGridParser();
+        private ISaddlePointResolver saddlePointResolver = new SaddlePointResolver();
+        private IParetoPointsResolver paretoPointsResolver = new ParetoPointsResolver();
+        private IClearCostResolver clearCostResolver = new ClearCostResolver();
+        private Byte rowsCountValue = 0;
+        private Byte colsCountValue = 0;
+        private Boolean isBuilded = false;
+        private Boolean isStarted = false;
+        private Table inputTable;
+        private Table saddleTable;
+        private Table paretoTable;
+        private Table clearCostTable;
+        private Double[][] normalizedArray;
+        private Double[][] strategiesArray;
+        private Double[][] paretoArray;
+        private StrategiesTable strategiesTable;
 
-        protected Int32 M {
+        protected Byte RowsCount {
+            get { return this.rowsCountValue; }
+            set {
+                this.rowsCountValue = value;
+                this.UpdateLayout();
+            }
+        }
+
+        protected Byte ColsCount {
+            get { return this.colsCountValue; }
+            set {
+                this.colsCountValue = value;
+                this.UpdateLayout();
+            }
+        }
+
+        protected Nullable<Byte> InputRowsCount {
             get {
-                var mValue = -1;
-                var isMValid = false;
+                Byte? rowsCountValue = null;
 
-                if (Int32.TryParse(this.mTextBox.Text, out mValue)) {
-                    if (mValue > 0) {
-                        isMValid = true;
+                {
+                    Byte numberValue;
+
+                    if (Byte.TryParse(this.rowsCountTextBox.Text, out numberValue)) {
+                        rowsCountValue = numberValue;
                     }
                 }
 
-                if (!isMValid) {
-                    this.mTextBox.Text = this.mValue.ToString();
-                    this.isMChanged = false;
-                    mValue = this.M;
-                }
-
-                return mValue;
+                return rowsCountValue;
             }
             set {
-                var newValue = value > 0 ? value : this.mValue;
-
-                this.isMChanged = false;
-                this.mValue = newValue;
+                this.rowsCountTextBox.Text = value.ToString();
+                this.UpdateLayout();
             }
         }
 
-        public MainForm()
-        {
-            InitializeComponent();
+        protected Nullable<Byte> InputColsCount {
+            get {
+                Byte? colsCountValue = null;
 
-            this.mValue = MainForm.defaultMValue;
+                {
+                    Byte numberValue;
 
+                    if (Byte.TryParse(this.colsCountTextBox.Text, out numberValue)) {
+                        colsCountValue = numberValue;
+                    }
+                }
+
+                return colsCountValue;
+            }
+            set {
+                this.colsCountTextBox.Text = value.ToString();
+                this.UpdateLayout();
+            }
+        }
+
+        public MainForm() {
+            this.InitializeComponent();
+
+            this.rowsCountValue = (Byte)MainForm.defaultSizeValue.Height;
+            this.colsCountValue = (Byte)MainForm.defaultSizeValue.Width;
+
+            this.UpdateLayout();
+            this.InputRowsCount = this.RowsCount;
+            this.InputColsCount = this.ColsCount;
+        }
+
+        public void Calculate(Boolean isTabTransferOn = false) {
+            Double[][] array = null;
+            var rowsValue = this.grid.Rows.Count - 1;
+            var colsValue = this.grid.Columns.Count;
+
+            if (this.tabControl.SelectedTab != this.inputTabPage) {
+                this.tabControl.SelectTab(this.inputTabPage.Name);
+                this.grid.Load(this.inputTable);
+            }
+            array = this.arrayFromGridParser.Parse(this.grid);
+
+            if (array != null) {
+                Matrix strategiesMatrix = null;
+                Matrix normalizedMatrix = null;
+
+                this.inputTable = null;
+                this.strategiesArray = null;
+                this.normalizedArray = null;
+
+                // Сохраняем inputTable
+                this.inputTable = this.grid.Save();
+                this.strategiesArray = array;
+                strategiesMatrix = new Matrix(this.strategiesArray);
+                // Седловая точка
+                {
+                    var saddlePointModel = this.saddlePointResolver.Resolve(strategiesMatrix);
+
+                    if (isTabTransferOn) {
+                        this.grid.Load(saddlePointModel.Table);
+                    }
+                    this.saddleTable = saddlePointModel.Table;
+                }
+                // Парето
+                if (strategiesMatrix != null) {
+                    var model = this.paretoPointsResolver.Resolve(strategiesMatrix);
+
+                    this.paretoArray = model.Array;
+                    this.paretoTable = model.Table;
+                }
+                // Чистая стратегия и её цена
+                if (this.paretoArray != null) {
+                    var model = this.clearCostResolver.Solve(new Matrix(this.paretoArray));
+
+                    this.clearCostTable = model.Table;
+                }
+                // Графическое решение
+                if (this.paretoArray != null) {
+                    normalizedMatrix = this.Normalize(this.paretoArray);
+                    if (normalizedMatrix != null) {
+                        this.normalizedArray = normalizedMatrix.RowsCount == 2 && normalizedMatrix.ColsCount == 2
+                            ? strategiesMatrix.RowsCount == 2 ? normalizedMatrix.ToArray() : normalizedMatrix.Rotate().ToArray()
+                            : normalizedMatrix.RowsCount == 2 ? normalizedMatrix.ToArray() : normalizedMatrix.Rotate().ToArray();
+                        this.strategiesTable = new StrategiesTable(
+                            this.normalizedArray,
+                            normalizedMatrix.RowsCount == 2 && normalizedMatrix.ColsCount == 2
+                                ? strategiesMatrix.RowsCount == 2 ? Contour.Bottom : Contour.Upper
+                                : normalizedMatrix.RowsCount == 2 ? Contour.Bottom : Contour.Upper
+                        );
+                    }
+                }
+            }
+            this.isStarted = true;
+
+            this.UpdateLayout();
+            this.tabControl.SelectTab(this.saddleTabPage.Name);
+        }
+
+        protected void ResizeLayout() {
+            var panelPoint = new Point(0, 0);
+            var panelSize = new Size(this.ClientSize.Width, this.panel.Height);
+            var gridPoint = new Point(0, panelPoint.Y + panelSize.Height);
+            var gridSize = new Size(this.ClientSize.Width, this.ClientSize.Height - gridPoint.Y);
+            var tabControlSize = new Size(this.ClientSize.Width, this.tabControl.Height);
+            var tabControlPoint = new Point(0, panelSize.Height - tabControlSize.Height);
+
+            if (this.panel.Location != panelPoint) {
+                this.panel.Location = panelPoint;
+            }
+            if (this.panel.Size != panelSize) {
+                this.panel.Size = panelSize;
+            }
+            if (this.grid.Location != gridPoint) {
+                this.grid.Location = gridPoint;
+            }
+            if (this.grid.Size != gridSize) {
+                this.grid.Size = gridSize;
+            }
+            if (this.tabControl.Size != tabControlSize) {
+                this.tabControl.Size = tabControlSize;
+            }
+            if (this.tabControl.Location != tabControlPoint) {
+                this.tabControl.Location = tabControlPoint;
+            }
+        }
+
+        protected void UpdateLayout() {
             this.ResizeLayout();
-            this.OnGameModeChange(GameModes.MxN);
-            this.mTextBox.Text = MainForm.defaultMValue.ToString();
-        }
 
-        protected void ResizeLayout()
-        {
-            var height = 40;
+            this.rowsCountTextBox.BackColor = this.RowsCount != this.InputRowsCount ? Color.Yellow : Color.White;
+            this.colsCountTextBox.BackColor = this.ColsCount != this.InputColsCount ? Color.Yellow : Color.White;
+            this.buildButton.BackColor = !(this.RowsCount == this.InputRowsCount && this.ColsCount == this.InputColsCount)
+                                            ? Color.Yellow
+                                            : Color.White;
+            this.startButton.Enabled = this.isBuilded;
+            this.graphButton.Enabled = this.isStarted;
 
-            this.grid.Location = new Point(0, height);
-            this.grid.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - height);
-        }
-
-        protected void UpdateGameMode(GameModes gameMode) {
-            var labelString = "";
-            var labelXValue = 0;
-            var inputXValue = 0;
-
-            if (gameMode == GameModes.MxN) {
-                labelString = "(<=>) M x 2";
-                labelXValue = 12;
-                inputXValue = 88;
-            } else {
-                labelString = "2 x M (<=>)";
-                labelXValue = 48;
-                inputXValue = 12;
+            this.tabControl.TabPages.Clear();
+            if (this.isBuilded && this.inputTable != null) {
+                this.tabControl.TabPages.Add(this.inputTabPage);
             }
-
-            this.gameModeSwitchButton.Text = labelString;
-            this.gameModeSwitchButton.Location = new Point(labelXValue, this.gameModeSwitchButton.Location.Y);
-            this.mTextBox.Location = new Point(inputXValue, this.mTextBox.Location.Y);
-
-            {
-
+            if (this.isStarted && this.saddleTable != null) {
+                this.tabControl.TabPages.Add(this.saddleTabPage);
+            }
+            if (this.isStarted && this.paretoTable != null) {
+                this.tabControl.TabPages.Add(this.paretoTabPage);
+            }
+            if (this.isStarted && this.clearCostTable != null) {
+                this.tabControl.TabPages.Add(this.clearCostTabPage);
             }
         }
 
-        protected void UpdateMTextBox() {
-            this.mTextBox.BackColor = this.isMChanged ? Color.LightYellow : Color.White;
-        }
-
-        private void OnGameModeChange(GameModes gameMode) {
-            this.gameMode = gameMode;
-            this.UpdateGameMode(this.gameMode);
-        }
-
-        private void OnResize(object sender, EventArgs e)
-        {
+        private void OnResize(Object sender, EventArgs e) {
             this.ResizeLayout();
         }
 
         private void OnGameModeSwitchButtonClick(Object sender, EventArgs e) {
-            this.OnGameModeChange(this.gameMode == GameModes.MxN ? GameModes.NxM : GameModes.MxN);
+            var rowsCountValue = this.InputRowsCount;
+            var colsCountValue = this.InputColsCount;
+
+            this.InputRowsCount = colsCountValue;
+            this.InputColsCount = rowsCountValue;
         }
 
-        private void OnMTextBoxLeave(Object sender, EventArgs e) {
-            if (this.mValue != this.M) {
-                this.isMChanged = true;
-            }
-            this.UpdateMTextBox();
+        private void OnRowsTextBoxLeave(Object sender, EventArgs e) {
+            this.UpdateLayout();
         }
 
-        private void startButton_Click(Object sender, EventArgs e) {
-            var rowsValue = 0;
-            var colsValue = 0;
+        private void OnColsTextBoxLeave(Object sender, EventArgs e) {
+            this.UpdateLayout();
+        }
 
-            this.M = this.M;
+        private void OnBuildButtonClick(Object sender, EventArgs e) {
+            this.RowsCount = this.InputRowsCount.Value;
+            this.ColsCount = this.InputColsCount.Value;
 
-            if (this.gameMode == GameModes.MxN) {
-                rowsValue = this.M;
-                colsValue = 2;
-            } else {
-                rowsValue = 2;
-                colsValue = this.M;
-            }
-
+            this.inputTable = null;
+            this.saddleTable = null;
+            this.paretoTable = null;
+            this.clearCostTable = null;
+            this.normalizedArray = null;
+            this.strategiesArray = null;
+            this.paretoArray = null;
+            this.strategiesTable = null;
+            this.isBuilded = true;
+            
             {
-                Table t = new Table(rowsValue, colsValue).ForEach((cell, r, c) => new TextCell("0"));
+                Random rand = new Random(DateTime.Now.Millisecond);
+                Table table = new Table(this.RowsCount, this.ColsCount)
+                    .ForEach((cell, r, c) => new TextCell((rand.Next(0, 20)).ToString()));
 
-                this.grid.Load(t);
+                this.grid.Load(table);
+                this.inputTable = table;
+            }
+
+            this.UpdateLayout();
+            this.tabControl.SelectTab(this.inputTabPage.Name);
+        }
+
+        private void OnStartButtonClick(Object sender, EventArgs e) {
+            this.Calculate(true);
+        }
+
+        private void OnGraphButtonClick(Object sender, EventArgs e) {
+            if (false) { // DEBUG
+                Double[][] normalizedArray;
+
+                normalizedArray = new Double[2][];
+                normalizedArray[0] = new Double[7] { -6, -1, 1, 4, 7, 4, 3 };
+                normalizedArray[1] = new Double[7] { 7, -2, 6, 3, -2, -5, 7 };
+
+                this.strategiesTable = new StrategiesTable(normalizedArray, Contour.Upper);
+            }
+            if (this.strategiesTable != null) {
+                new GraphForm(this.strategiesTable).ShowDialog();
             }
         }
+
+        public Matrix Normalize(Double[][] array) {
+            Matrix matrix = new Matrix(array);
+
+            if (matrix.RowsCount != 2) {
+                if (matrix.ColsCount == 2) {
+                    return matrix.Rotate();
+                } else {
+                    matrix = null;
+                }
+            }
+
+            return matrix;
+        }
+
+        private void OnTabControlSelectedIndexChanged(Object sender, TabControlCancelEventArgs e) {
+
+            if (this.tabControl.SelectedTab == this.inputTabPage) {
+                this.grid.Load(this.inputTable);
+            }
+            if (this.tabControl.SelectedTab == this.saddleTabPage) {
+                this.grid.Load(this.saddleTable);
+            }
+            if (this.tabControl.SelectedTab == this.paretoTabPage) {
+                this.grid.Load(this.paretoTable);
+            }
+            if (this.tabControl.SelectedTab == this.clearCostTabPage) {
+                this.grid.Load(this.clearCostTable);
+            }
+        }
+
+        private void OnGridCellLeave(Object sender, DataGridViewCellEventArgs e) {}
     }
 }
