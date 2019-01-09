@@ -70,7 +70,7 @@ namespace Lomtseu {
                     }
 
                     table = new Table(rowsValue + 1, colsValue + 1).ForEach(c => new TextCell(""));
-                    if (maxByRowsCountValue == 1 && minByColsCountValue == 1) {
+                    if (maxByMinByRowValue == minByMaxByColValue && maxByRowsCountValue == 1 && minByColsCountValue == 1) {
                         point = new Point(minByColsIndexValue, maxByRowsIndexValue);
                     }
 
